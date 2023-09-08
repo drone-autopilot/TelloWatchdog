@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title.Value}" Height="700" Width="600" >
+        Title="{Binding Title.Value}" Height="1000" Width="600" >
+        <!--Title="{Binding Title.Value}" Height="700" Width="600" >-->
     <Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
         <Grid>
@@ -23,11 +24,30 @@
                             <Border BorderBrush="Gray" BorderThickness="1" Width="320" Height="180">
                                 <Image Margin="5" Width="320" Height="180"/>
                             </Border>
+                            <GroupBox Header="Connection info">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="150" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Label Grid.Row="0" Grid.Column="0" Content="State:" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="0" Grid.Column="1" Content="disconnected" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="1" Grid.Column="0" Content="Local address:" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="1" Grid.Column="1" Content=":8889" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="2" Grid.Column="0" Content="Target drone address:" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="2" Grid.Column="1" Content="192.168.10.1:8889" VerticalContentAlignment="Center" />
+                                </Grid>
+                            </GroupBox>
                             <GroupBox Header="Mission pad">
                                 <Grid>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="150" />
@@ -42,15 +62,15 @@
                             <GroupBox Header="Drone">
                                 <Grid>
                                     <Grid.RowDefinitions>
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="30" />
-                                        <RowDefinition Height="30" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
+                                        <RowDefinition Height="27" />
                                     </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="150" />
@@ -80,7 +100,19 @@
                     </GroupBox>
                     <GroupBox Header="Drone control">
                         <StackPanel>
-                            <Button Content="EMARGENCY STOP" Margin="5, 5, 5, 5" Height="30" Background="Red" FontWeight="Bold" FontSize="18" />
+                            <Button Content="Connect to drone" Margin="5" Height="30" />
+                            <Button Content="EMARGENCY STOP" Margin="5" Height="30" Background="Red" FontWeight="Bold" Foreground="White" />
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="250" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <TextBox Grid.Row="0" Grid.Column="0" Margin="2" />
+                                <Button Grid.Row="0" Grid.Column="1" Margin="2" Content="Send" />
+                            </Grid>
                         </StackPanel>
                     </GroupBox>
                 </StackPanel>

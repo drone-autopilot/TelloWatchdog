@@ -1,6 +1,8 @@
 ﻿using Prism.Mvvm;
 using Reactive.Bindings;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using TelloWatchdog.ViewModels.SocketConnection;
 
 namespace TelloWatchdog.ViewModels
 {
@@ -25,7 +27,11 @@ namespace TelloWatchdog.ViewModels
 
         private void SubscribeCommands()
         {
-            
+            //var sc = new TcpSocketClient("127.0.0.1", 52001);
+            //sc.Connect();
+            //sc.Send("hoge");
+            //var r = sc.Receive();
+            //Debug.Print(r);
         }
     }
 }

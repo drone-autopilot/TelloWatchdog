@@ -3,6 +3,7 @@ using Reactive.Bindings;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using TelloWatchdog.ViewModels.SocketConnection;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TelloWatchdog.ViewModels
 {
@@ -27,11 +28,11 @@ namespace TelloWatchdog.ViewModels
 
         private void SubscribeCommands()
         {
-            //var sc = new TcpSocketClient("127.0.0.1", 52001);
+            //var sc = new UdpSocketClient("127.0.0.1", 12345);
             //sc.Connect();
-            //sc.Send("hoge");
+            //sc.Send(System.Text.Encoding.ASCII.GetBytes("hogehogehogehoge"));
             //var r = sc.Receive();
-            //Debug.Print(r);
+            //Debug.Print(System.Text.Encoding.ASCII.GetString(r));
         }
     }
 }

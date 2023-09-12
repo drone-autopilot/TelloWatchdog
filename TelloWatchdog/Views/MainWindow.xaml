@@ -119,7 +119,15 @@
                 <Label Content="hoge" Grid.Column="1" />
             </Grid>
             <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" />
-            <ListView Grid.Row="2" ItemsSource="{Binding Logs}" />
+            <ListView Grid.Row="2" ItemsSource="{Binding Logs}">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Level" DisplayMemberBinding="{Binding Level}" />
+                        <GridViewColumn Header="DateTime" DisplayMemberBinding="{Binding DateTime}" />
+                        <GridViewColumn Header="Message" DisplayMemberBinding="{Binding Message}" />
+                    </GridView>
+                </ListView.View>
+            </ListView>
         </Grid>
     </Grid>
 </Window>

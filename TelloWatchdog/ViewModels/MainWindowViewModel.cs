@@ -2,8 +2,8 @@
 using Reactive.Bindings;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using TelloWatchdog.ViewModels.SocketConnection;
-using static System.Net.Mime.MediaTypeNames;
+using TelloWatchdog.Models;
+using TelloWatchdog.Models.SocketConnection;
 
 namespace TelloWatchdog.ViewModels
 {
@@ -11,8 +11,8 @@ namespace TelloWatchdog.ViewModels
     {
         public ReactiveProperty<string> Title { get; } = new ReactiveProperty<string>("TelloWatchdog");
 
-        private ObservableCollection<string> _logs = new ObservableCollection<string>();
-        public ObservableCollection<string> Logs
+        private ObservableCollection<Log> _logs = new ObservableCollection<Log>();
+        public ObservableCollection<Log> Logs
         {
             get => _logs;
             set => SetProperty(ref _logs, value);
@@ -20,19 +20,41 @@ namespace TelloWatchdog.ViewModels
 
         public MainWindowViewModel()
         {
-            this.Logs.Add("log1");
-            this.Logs.Add("log2");
-            this.Logs.Add("log3");
             this.SubscribeCommands();
         }
 
         private void SubscribeCommands()
         {
-            //var sc = new UdpSocketClient("127.0.0.1", 12345);
-            //sc.Connect();
-            //sc.Send(System.Text.Encoding.ASCII.GetBytes("hogehogehogehoge"));
-            //var r = sc.Receive();
-            //Debug.Print(System.Text.Encoding.ASCII.GetString(r));
+            var sc = new TcpSocketClient("127.0.0.1", 52001);
+            
+            if (sc.Connect().IsErr(out var e1))
+            {
+                this.Logs.Add(new Log(LogLevel.Error, e1.Message));
+                sc.Close();
+                return;
+            }
+
+            if (sc.Send("hoge").IsErr(out var e2))
+            {
+                this.Logs.Add(new Log(LogLevel.Error, e2.Message));
+                sc.Close();
+                return;
+            }
+
+            var r = sc.Receive();
+
+            if (r.IsOk(out var res))
+            {
+                this.Logs.Add(new Log(LogLevel.Info, $"Received: \"{res}\""));
+            }
+            else if (r.IsErr(out var e3))
+            {
+                this.Logs.Add(new Log(LogLevel.Error, e3.Message));
+                sc.Close();
+                return;
+            }
+
+            sc.Close();
         }
     }
 }

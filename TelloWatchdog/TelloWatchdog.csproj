@@ -12,5 +12,6 @@
     <PackageReference Include="Prism.DryIoc" Version="8.1.97" />
     <PackageReference Include="QuickConverter.NetCore" Version="1.2.5" />
     <PackageReference Include="ReactiveProperty" Version="9.3.1" />
+    <PackageReference Include="RustyOptions" Version="0.9.0" />
   </ItemGroup>
 </Project>

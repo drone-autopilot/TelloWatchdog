@@ -6,9 +6,7 @@ using OpenCvSharp;
 using OpenCvSharp.WpfExtensions;
 using System.Threading.Tasks;
 using System.Windows.Media;
-using System.Windows.Data;
 using System.Windows;
-using System.Windows.Media.Imaging;
 
 namespace TelloWatchdog.ViewModels
 {
@@ -25,14 +23,21 @@ namespace TelloWatchdog.ViewModels
             this.SubscribeCommands();
         }
 
+        private void WriteLog(Models.LogLevel logLevel, string message)
+        {
+            this.Logs.Add(new Log(logLevel, message));
+        }
+
         private void CaptureUdpVideoStream(string fileName)
         {
-            Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Connecting to \"{fileName}\"...")));
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Connecting to \"{fileName}\"..."));
             var capture = VideoCapture.FromFile(fileName);
             var frame = new Mat();
-            Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Connected!")));
 
-            while (true)
+            if (capture.IsOpened())
+                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Connected!"));
+
+            while (capture.IsOpened())
             {
                 capture.Read(frame);
 
@@ -45,6 +50,8 @@ namespace TelloWatchdog.ViewModels
                 writableBitmap.Freeze();
                 Application.Current.Dispatcher.Invoke(() => this.VideoImage.Value = writableBitmap);
             }
+
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Disconnected!"));
         }
 
         private void SubscribeCommands()

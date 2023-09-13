@@ -22,7 +22,7 @@
                     <GroupBox Header="Tello state" VerticalAlignment="Top">
                         <StackPanel>
                             <Border BorderBrush="Gray" BorderThickness="1" Width="320" Height="180">
-                                <Image Margin="5" Width="320" Height="180"/>
+                                <Image Margin="5" Width="320" Height="180" Source="{Binding VideoImage.Value}" />
                             </Border>
                             <GroupBox Header="Connection info">
                                 <Grid>
@@ -100,7 +100,7 @@
                     </GroupBox>
                     <GroupBox Header="Drone control">
                         <StackPanel>
-                            <Button Content="Connect to drone" Margin="5" Height="30" />
+                            <Button Content="Connect to drone" Margin="5" Height="30" Command="{Binding ConnectToDroneButton_Clicked}" />
                             <Button Content="EMARGENCY STOP" Margin="5" Height="30" Background="Red" FontWeight="Bold" Foreground="White" />
                             <Grid Margin="5">
                                 <Grid.RowDefinitions>

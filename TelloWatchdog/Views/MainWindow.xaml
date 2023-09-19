@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title.Value}" Height="1000" Width="600" >
+        Title="{Binding Title.Value}" Height="600" Width="800" >
         <!--Title="{Binding Title.Value}" Height="700" Width="600" >-->
     <Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
@@ -98,25 +98,28 @@
                             </GroupBox>
                         </StackPanel>
                     </GroupBox>
-                    <GroupBox Header="Drone control">
-                        <StackPanel>
-                            <Button Content="Connect to drone" Margin="5" Height="30" Command="{Binding ConnectToDroneButton_Clicked}" />
-                            <Button Content="EMARGENCY STOP" Margin="5" Height="30" Background="Red" FontWeight="Bold" Foreground="White" />
-                            <Grid Margin="5">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="30" />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="250" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <TextBox Grid.Row="0" Grid.Column="0" Margin="2" />
-                                <Button Grid.Row="0" Grid.Column="1" Margin="2" Content="Send" />
-                            </Grid>
-                        </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                    <GroupBox Header="Autopilot server">
+                        <Grid Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Content="UDP video stream address:" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerUDPVideoStreamAddress.Value}" VerticalContentAlignment="Center" />
+                            <Button Grid.Row="0" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerUDPVideoStreamButton_Clicked}" />
+                            <Label Grid.Row="1" Grid.Column="0" Content="TCP address:" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddress.Value}" VerticalContentAlignment="Center" />
+                            <Button Grid.Row="1" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPButton_Clicked}" />
+                        </Grid>
                     </GroupBox>
                 </StackPanel>
-                <Label Content="hoge" Grid.Column="1" />
             </Grid>
             <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" />
             <ListView Grid.Row="2" ItemsSource="{Binding Logs}">

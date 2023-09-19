@@ -20,6 +20,14 @@ namespace TelloWatchdog.Models.SocketConnection
             this.Client = new TcpClient();
         }
 
+        public TcpSocketClient(string address)
+        {
+            var aap = address.Split(":");
+            this.IPAddress = IPAddress.Parse(aap[0]);
+            this.Port = int.Parse(aap[1]);
+            this.Client = new TcpClient();
+        }
+
         public Result<bool, Exception> Connect()
         {
             try

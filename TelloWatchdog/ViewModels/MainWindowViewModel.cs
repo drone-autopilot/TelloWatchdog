@@ -7,6 +7,8 @@ using OpenCvSharp.WpfExtensions;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
+using System;
+using TelloWatchdog.Models.SocketConnection;
 
 namespace TelloWatchdog.ViewModels
 {
@@ -14,9 +16,12 @@ namespace TelloWatchdog.ViewModels
     {
         public ReactiveProperty<string> Title { get; } = new ReactiveProperty<string>("TelloWatchdog");
         public ReactiveProperty<ImageSource> VideoImage { get; } = new ReactiveProperty<ImageSource>();
+        public ReactiveProperty<string> AutopilotServerUDPVideoStreamAddress { get; } = new ReactiveProperty<string>("udp://0.0.0.0:11111");
+        public ReactiveProperty<string> AutopilotServerTCPAddress { get; } = new ReactiveProperty<string>("127.0.0.1:8891");
         public ObservableCollection<Log> Logs { get; } = new ObservableCollection<Log>();
 
-        public ReactiveCommand ConnectToDroneButton_Clicked { get; } = new ReactiveCommand();
+        public ReactiveCommand ConnectToAutopilotServerUDPVideoStreamButton_Clicked { get; } = new ReactiveCommand();
+        public ReactiveCommand ConnectToAutopilotServerTCPButton_Clicked { get; } = new ReactiveCommand();
 
         public MainWindowViewModel()
         {
@@ -28,10 +33,11 @@ namespace TelloWatchdog.ViewModels
             this.Logs.Add(new Log(logLevel, message));
         }
 
-        private void CaptureUdpVideoStream(string fileName)
+        private void CaptureUdpVideoStream()
         {
-            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Connecting to \"{fileName}\"..."));
-            var capture = VideoCapture.FromFile(fileName);
+            var address = this.AutopilotServerUDPVideoStreamAddress.Value;
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Connecting to \"{address}\"..."));
+            var capture = VideoCapture.FromFile(address);
             var frame = new Mat();
 
             if (capture.IsOpened())
@@ -42,7 +48,7 @@ namespace TelloWatchdog.ViewModels
                 capture.Read(frame);
 
                 if (frame.Empty() || frame.ElemSize() == 0)
-                {
+                { 
                     continue;
                 }
 
@@ -54,39 +60,54 @@ namespace TelloWatchdog.ViewModels
             Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Disconnected!"));
         }
 
+        private void TcpClient()
+        {
+            TcpSocketClient sc = null;
+            try
+            {
+                sc = new TcpSocketClient(this.AutopilotServerTCPAddress.Value);
+            }
+            catch (Exception e)
+            {
+                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, e.Message));
+                return;
+            }
+
+            if (sc.Connect().IsErr(out var connectError))
+            {
+                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, connectError.Message));
+                sc.Close();
+                return;
+            }
+
+            // send test
+            if (sc.Send("abc").IsErr(out var sendError))
+            {
+                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, sendError.Message));
+                sc.Close();
+                return;
+            }
+
+            while (true)
+            {
+                var r = sc.Receive();
+                if (r.IsOk(out var res))
+                {
+                    Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Received: \"{res}\"")));
+                }
+                else if (r.IsErr(out var resError))
+                {
+                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, resError.Message));
+                    sc.Close();
+                    break;
+                }
+            }
+        }
+
         private void SubscribeCommands()
         {
-            //var sc = new TcpSocketClient("127.0.0.1", 52001);
-
-            //if (sc.Connect().IsErr(out var e1))
-            //{
-            //    this.Logs.Add(new Log(Models.LogLevel.Error, e1.Message));
-            //    sc.Close();
-            //    return;
-            //}
-
-            //if (sc.Send("hoge").IsErr(out var e2))
-            //{
-            //    this.Logs.Add(new Log(Models.LogLevel.Error, e2.Message));
-            //    sc.Close();
-            //    return;
-            //}
-
-            //var r = sc.Receive();
-
-            //if (r.IsOk(out var res))
-            //{
-            //    this.Logs.Add(new Log(Models.LogLevel.Info, $"Received: \"{res}\""));
-            //}
-            //else if (r.IsErr(out var e3))
-            //{
-            //    this.Logs.Add(new Log(Models.LogLevel.Error, e3.Message));
-            //    sc.Close();
-            //    return;
-            //}
-
-            //sc.Close();
-            this.ConnectToDroneButton_Clicked.Subscribe(() => Task.Run(() => this.CaptureUdpVideoStream("udp://127.0.0.1:1234")));
+            this.ConnectToAutopilotServerUDPVideoStreamButton_Clicked.Subscribe(() => Task.Run(() => this.CaptureUdpVideoStream()));
+            this.ConnectToAutopilotServerTCPButton_Clicked.Subscribe(() => Task.Run(() => this.TcpClient()));
         }
     }
 }

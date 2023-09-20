@@ -24,25 +24,6 @@
                             <Border BorderBrush="Gray" BorderThickness="1" Width="320" Height="180">
                                 <Image Margin="5" Width="320" Height="180" Source="{Binding VideoImage.Value}" />
                             </Border>
-                            <GroupBox Header="Connection info">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Grid.Row="0" Grid.Column="0" Content="State:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="0" Grid.Column="1" Content="disconnected" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="1" Grid.Column="0" Content="Local address:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="1" Grid.Column="1" Content=":8889" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="2" Grid.Column="0" Content="Target drone address:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="2" Grid.Column="1" Content="192.168.10.1:8889" VerticalContentAlignment="Center" />
-                                </Grid>
-                            </GroupBox>
                             <GroupBox Header="Mission pad">
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -54,9 +35,9 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Row="0" Grid.Column="0" Content="ID:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="0" Grid.Column="1" Content="hoge" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="0" Grid.Column="1" Content="-" VerticalContentAlignment="Center" />
                                     <Label Grid.Row="1" Grid.Column="0" Content="(X, Y, Z) Position:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="1" Grid.Column="1" Content="(0, 0, 0)" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="1" Grid.Column="1" Content="-, -, -" VerticalContentAlignment="Center" />
                                 </Grid>
                             </GroupBox>
                             <GroupBox Header="Drone">
@@ -77,23 +58,45 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <Label Grid.Row="0" Grid.Column="0" Content="(Pitch, Roll, Yaw) angle:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="0" Grid.Column="1" Content="(0°, 0°, 0°)" VerticalContentAlignment="Center" />
+                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                                        <Label Content="{Binding TelloState.Value.Pitch}" />
+                                        <Label Content="," />
+                                        <Label Content="{Binding TelloState.Value.Roll}" />
+                                        <Label Content="," />
+                                        <Label Content="{Binding TelloState.Value.Yaw}" />
+                                    </StackPanel>
                                     <Label Grid.Row="1" Grid.Column="0" Content="(X, Y, Z) speed:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="1" Grid.Column="1" Content="(0, 0, 0)" VerticalContentAlignment="Center" />
+                                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                                        <Label Content="{Binding TelloState.Value.Speeds.X}" />
+                                        <Label Content="," />
+                                        <Label Content="{Binding TelloState.Value.Speeds.Y}" />
+                                        <Label Content="," />
+                                        <Label Content="{Binding TelloState.Value.Speeds.Z}" />
+                                    </StackPanel>
                                     <Label Grid.Row="2" Grid.Column="0" Content="(X, Y, Z) acceleration:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="2" Grid.Column="1" Content="(0, 0, 0)" VerticalContentAlignment="Center" />
+                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                                        <Label Content="{Binding TelloState.Value.Accelerations.X}" />
+                                        <Label Content="," />
+                                        <Label Content="{Binding TelloState.Value.Accelerations.Y}" />
+                                        <Label Content="," />
+                                        <Label Content="{Binding TelloState.Value.Accelerations.Z}" />
+                                    </StackPanel>
                                     <Label Grid.Row="3" Grid.Column="0" Content="(Row / High) temperature:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="3" Grid.Column="1" Content="(0°C / 0°C)" VerticalContentAlignment="Center" />
+                                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                                        <Label Content="{Binding TelloState.Value.TempLow}" />
+                                        <Label Content="/" />
+                                        <Label Content="{Binding TelloState.Value.TempHigh}" />
+                                    </StackPanel>
                                     <Label Grid.Row="4" Grid.Column="0" Content="ToF value:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="4" Grid.Column="1" Content="0cm" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="4" Grid.Column="1" Content="{Binding TelloState.Value.TimeOfFlight}" VerticalContentAlignment="Center" />
                                     <Label Grid.Row="5" Grid.Column="0" Content="Barometer value:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="5" Grid.Column="1" Content="0" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="5" Grid.Column="1" Content="{Binding TelloState.Value.Barometer}" VerticalContentAlignment="Center" />
                                     <Label Grid.Row="6" Grid.Column="0" Content="Height:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="6" Grid.Column="1" Content="0cm" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="6" Grid.Column="1" Content="{Binding TelloState.Value.Height}" VerticalContentAlignment="Center" />
                                     <Label Grid.Row="7" Grid.Column="0" Content="Battery:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="7" Grid.Column="1" Content="0%" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="7" Grid.Column="1" Content="{Binding TelloState.Value.Battery}" VerticalContentAlignment="Center" />
                                     <Label Grid.Row="8" Grid.Column="0" Content="Elapsed:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="8" Grid.Column="1" Content="0" VerticalContentAlignment="Center" />
+                                    <Label Grid.Row="8" Grid.Column="1" Content="{Binding TelloState.Value.Time}" VerticalContentAlignment="Center" />
                                 </Grid>
                             </GroupBox>
                         </StackPanel>

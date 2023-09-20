@@ -9,17 +9,18 @@ using System.Windows.Media;
 using System.Windows;
 using System;
 using TelloWatchdog.Models.SocketConnection;
-using System.Net;
+using Newtonsoft.Json;
 
 namespace TelloWatchdog.ViewModels
 {
     public class MainWindowViewModel : BindableBase
     {
         public ReactiveProperty<string> Title { get; } = new ReactiveProperty<string>("TelloWatchdog");
+        public ReactiveProperty<TelloState> TelloState { get; } = new ReactiveProperty<TelloState>(new TelloState());
         public ReactiveProperty<ImageSource> VideoImage { get; } = new ReactiveProperty<ImageSource>();
         public ReactiveProperty<bool> IsConnectedWithAutopilotServer { get; } = new ReactiveProperty<bool>(false);
         public ReactiveProperty<bool> IsSendingCommandToAutopilotServer { get; } = new ReactiveProperty<bool>(false);
-        public ReactiveProperty<string> AutopilotServerUDPVideoStreamAddress { get; } = new ReactiveProperty<string>("udp://0.0.0.0:11112");
+        public ReactiveProperty<string> AutopilotServerUDPVideoStreamAddress { get; } = new ReactiveProperty<string>("udp://127.0.0.1:11112");
         public ReactiveProperty<string> AutopilotServerTCPAddress { get; } = new ReactiveProperty<string>("127.0.0.1:8891");
         public ReactiveProperty<string> AutopilotServerCommand { get; } = new ReactiveProperty<string>("");
         public ObservableCollection<Log> Logs { get; } = new ObservableCollection<Log>();
@@ -111,6 +112,14 @@ namespace TelloWatchdog.ViewModels
                 var r = sc.Receive();
                 if (r.IsOk(out var res))
                 {
+                    // tello state
+                    try
+                    {
+                        var state = JsonConvert.DeserializeObject<TelloState>(res);
+                        Application.Current.Dispatcher.Invoke(() => this.TelloState.Value = state);
+                    }
+                    catch (JsonException) { }
+
                     Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Received: \"{res}\"")));
                 }
                 else if (r.IsErr(out var resError))

@@ -28,11 +28,13 @@ namespace TelloWatchdog.Models.SocketConnection
             this.Client = new TcpClient();
         }
 
-        public Result<bool, Exception> Connect()
+        public Result<bool, Exception> Connect(int timeout)
         {
             try
             {
                 this.Client.Connect(this.IPAddress, this.Port);
+                this.Client.ReceiveTimeout = timeout;
+                this.Client.SendTimeout = timeout;
                 this.Stream = Client.GetStream();
             }
             catch (Exception ex)

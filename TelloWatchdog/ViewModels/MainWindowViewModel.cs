@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows;
 using System;
 using TelloWatchdog.Models.SocketConnection;
+using System.Net;
 
 namespace TelloWatchdog.ViewModels
 {
@@ -16,12 +17,18 @@ namespace TelloWatchdog.ViewModels
     {
         public ReactiveProperty<string> Title { get; } = new ReactiveProperty<string>("TelloWatchdog");
         public ReactiveProperty<ImageSource> VideoImage { get; } = new ReactiveProperty<ImageSource>();
-        public ReactiveProperty<string> AutopilotServerUDPVideoStreamAddress { get; } = new ReactiveProperty<string>("udp://0.0.0.0:11111");
+        public ReactiveProperty<bool> IsConnectedWithAutopilotServer { get; } = new ReactiveProperty<bool>(false);
+        public ReactiveProperty<bool> IsSendingCommandToAutopilotServer { get; } = new ReactiveProperty<bool>(false);
+        public ReactiveProperty<string> AutopilotServerUDPVideoStreamAddress { get; } = new ReactiveProperty<string>("udp://0.0.0.0:11112");
         public ReactiveProperty<string> AutopilotServerTCPAddress { get; } = new ReactiveProperty<string>("127.0.0.1:8891");
+        public ReactiveProperty<string> AutopilotServerCommand { get; } = new ReactiveProperty<string>("");
         public ObservableCollection<Log> Logs { get; } = new ObservableCollection<Log>();
 
         public ReactiveCommand ConnectToAutopilotServerUDPVideoStreamButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand ConnectToAutopilotServerTCPButton_Clicked { get; } = new ReactiveCommand();
+        public ReactiveCommand SendCommandToAutopilotServerButton_Clicked { get; } = new ReactiveCommand();
+
+        private readonly int TCPClientTimeout = 5000;
 
         public MainWindowViewModel()
         {
@@ -73,23 +80,34 @@ namespace TelloWatchdog.ViewModels
                 return;
             }
 
-            if (sc.Connect().IsErr(out var connectError))
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Connecting to \"{this.AutopilotServerTCPAddress.Value}\"..."));
+            if (sc.Connect(this.TCPClientTimeout).IsErr(out var connectError))
             {
                 Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, connectError.Message));
                 sc.Close();
                 return;
             }
 
-            // send test
-            if (sc.Send("abc").IsErr(out var sendError))
-            {
-                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, sendError.Message));
-                sc.Close();
-                return;
-            }
+            Application.Current.Dispatcher.Invoke(() => this.IsConnectedWithAutopilotServer.Value = true);
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Connected!"));
 
             while (true)
             {
+                if (this.IsSendingCommandToAutopilotServer.Value)
+                {
+                    var command = this.AutopilotServerCommand.Value;
+                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Sending command: \"{command}\""));
+                    var result = sc.Send(command);
+                    Application.Current.Dispatcher.Invoke(() => this.IsSendingCommandToAutopilotServer.Value = false);
+
+                    if (result.IsErr(out var sendError))
+                    {
+                        Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, sendError.Message));
+                        break;
+                    }
+                }
+
+                // wait for response
                 var r = sc.Receive();
                 if (r.IsOk(out var res))
                 {
@@ -97,17 +115,30 @@ namespace TelloWatchdog.ViewModels
                 }
                 else if (r.IsErr(out var resError))
                 {
+                    // TODO: timeout error
                     Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, resError.Message));
-                    sc.Close();
-                    break;
+                    //break;
                 }
             }
+
+            sc.Close();
+            Application.Current.Dispatcher.Invoke(() => this.IsConnectedWithAutopilotServer.Value = false);
         }
 
         private void SubscribeCommands()
         {
             this.ConnectToAutopilotServerUDPVideoStreamButton_Clicked.Subscribe(() => Task.Run(() => this.CaptureUdpVideoStream()));
             this.ConnectToAutopilotServerTCPButton_Clicked.Subscribe(() => Task.Run(() => this.TcpClient()));
+
+            this.SendCommandToAutopilotServerButton_Clicked.Subscribe(() =>
+            {
+                var command = this.AutopilotServerCommand.Value;
+
+                if (command.Length != 0)
+                {
+                    this.IsSendingCommandToAutopilotServer.Value = true;
+                }
+            });
         }
     }
 }

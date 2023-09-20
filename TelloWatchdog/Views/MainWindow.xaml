@@ -2,9 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
+        xmlns:qc="http://QuickConverter.CodePlex.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title.Value}" Height="600" Width="800" >
-        <!--Title="{Binding Title.Value}" Height="700" Width="600" >-->
     <Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
         <Grid>
@@ -105,6 +105,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30" />
                                 <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -116,7 +117,10 @@
                             <Button Grid.Row="0" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerUDPVideoStreamButton_Clicked}" />
                             <Label Grid.Row="1" Grid.Column="0" Content="TCP address:" />
                             <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddress.Value}" VerticalContentAlignment="Center" />
-                            <Button Grid.Row="1" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPButton_Clicked}" />
+                            <Button Grid.Row="1" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPButton_Clicked}" IsEnabled="{qc:Binding '!$P', P={Binding IsConnectedWithAutopilotServer.Value}}" />
+                            <Label Grid.Row="2" Grid.Column="0" Content="Command:" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerCommand.Value}" VerticalContentAlignment="Center" />
+                            <Button Grid.Row="2" Grid.Column="2" Margin="2,2,2,0" Content="Send" Height="26" VerticalAlignment="Top" IsEnabled="{qc:MultiBinding '$P0 &amp;&amp; !$P1' , P0={Binding IsConnectedWithAutopilotServer.Value}, P1={Binding IsSendingCommandToAutopilotServer.Value}}" Command="{Binding SendCommandToAutopilotServerButton_Clicked}" />
                         </Grid>
                     </GroupBox>
                 </StackPanel>

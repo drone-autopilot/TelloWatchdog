@@ -121,10 +121,9 @@
                             <Button Grid.Row="0" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerUDPVideoStreamButton_Clicked}" />
                             <Label Grid.Row="1" Grid.Column="0" Content="TCP address for state:" />
                             <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForState.Value}" VerticalContentAlignment="Center" />
-                            <Button Grid.Row="1" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPForStateButton_Clicked}" />
                             <Label Grid.Row="2" Grid.Column="0" Content="TCP address for command:" />
                             <TextBox Grid.Row="2" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForCommand.Value}" VerticalContentAlignment="Center" />
-                            <Button Grid.Row="2" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPForCommandButton_Clicked}" IsEnabled="{qc:Binding '!$P', P={Binding IsConnectedWithAutopilotServer.Value}}" />
+                            <Button Grid.Row="2" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPButton_Clicked}" IsEnabled="{qc:Binding '!$P', P={Binding IsConnectedWithAutopilotServer.Value}}" />
                             <Label Grid.Row="3" Grid.Column="0" Content="Command:" />
                             <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerCommand.Value}" VerticalContentAlignment="Center" />
                             <Button Grid.Row="3" Grid.Column="2" Margin="2,2,2,0" Content="Send" Height="26" VerticalAlignment="Top" IsEnabled="{qc:MultiBinding '$P0 &amp;&amp; !$P1' , P0={Binding IsConnectedWithAutopilotServer.Value}, P1={Binding IsSendingCommandToAutopilotServer.Value}}" Command="{Binding SendCommandToAutopilotServerButton_Clicked}" />

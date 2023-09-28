@@ -27,11 +27,12 @@ namespace TelloWatchdog.ViewModels
         public ObservableCollection<Log> Logs { get; } = new ObservableCollection<Log>();
 
         public ReactiveCommand ConnectToAutopilotServerUDPVideoStreamButton_Clicked { get; } = new ReactiveCommand();
-        public ReactiveCommand ConnectToAutopilotServerTCPForStateButton_Clicked { get; } = new ReactiveCommand();
-        public ReactiveCommand ConnectToAutopilotServerTCPForCommandButton_Clicked { get; } = new ReactiveCommand();
+        public ReactiveCommand ConnectToAutopilotServerTCPButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand SendCommandToAutopilotServerButton_Clicked { get; } = new ReactiveCommand();
 
         private readonly int TCPClientTimeout = 5000;
+        private readonly int TCPErrorRange = 5;
+        private int TCPErrorCount = 0;
 
         public MainWindowViewModel()
         {
@@ -95,6 +96,12 @@ namespace TelloWatchdog.ViewModels
 
             while (true)
             {
+                if (this.TCPErrorCount > this.TCPErrorRange)
+                {
+                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Auto disconnected!"));
+                    break;
+                }
+
                 // wait for response
                 var r = sc.Receive();
                 if (r.IsOk(out var res))
@@ -104,16 +111,17 @@ namespace TelloWatchdog.ViewModels
                     {
                         var state = JsonConvert.DeserializeObject<TelloState>(res);
                         Application.Current.Dispatcher.Invoke(() => this.TelloState.Value = state);
+                        this.TCPErrorCount = 0;
                     }
                     catch (JsonException) { }
 
-                    Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Received: \"{res}\"")));
+                    //Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Received: \"{res}\"")));
                 }
                 else if (r.IsErr(out var resError))
                 {
                     // TODO: timeout error
                     Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, resError.Message));
-                    //break;
+                    this.TCPErrorCount++;
                 }
             }
 
@@ -146,6 +154,12 @@ namespace TelloWatchdog.ViewModels
 
             while (true)
             {
+                if (this.TCPErrorCount > this.TCPErrorRange)
+                {
+                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Auto disconnected!"));
+                    break;
+                }
+
                 if (this.IsSendingCommandToAutopilotServer.Value)
                 {
                     var command = this.AutopilotServerCommand.Value;
@@ -165,12 +179,12 @@ namespace TelloWatchdog.ViewModels
                 if (r.IsOk(out var res))
                 {
                     Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Received: \"{res}\"")));
+                    this.TCPErrorCount = 0;
                 }
                 else if (r.IsErr(out var resError))
                 {
-                    // TODO: timeout error
                     Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, resError.Message));
-                    //break;
+                    this.TCPErrorCount++;
                 }
             }
 
@@ -181,8 +195,11 @@ namespace TelloWatchdog.ViewModels
         private void SubscribeCommands()
         {
             this.ConnectToAutopilotServerUDPVideoStreamButton_Clicked.Subscribe(() => Task.Run(() => this.CaptureUdpVideoStream()));
-            this.ConnectToAutopilotServerTCPForStateButton_Clicked.Subscribe(() => Task.Run(() => this.TcpClientForState()));
-            this.ConnectToAutopilotServerTCPForCommandButton_Clicked.Subscribe(() => Task.Run(() => this.TcpClientForCommand()));
+            this.ConnectToAutopilotServerTCPButton_Clicked.Subscribe(() =>
+            {
+                Task.Run(() => this.TcpClientForCommand());
+                Task.Run(() => this.TcpClientForState());
+            });
 
             this.SendCommandToAutopilotServerButton_Clicked.Subscribe(() =>
             {

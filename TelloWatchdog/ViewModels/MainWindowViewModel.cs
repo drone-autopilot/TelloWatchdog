@@ -29,6 +29,7 @@ namespace TelloWatchdog.ViewModels
         public ReactiveCommand ConnectToAutopilotServerUDPVideoStreamButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand ConnectToAutopilotServerTCPButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand SendCommandToAutopilotServerButton_Clicked { get; } = new ReactiveCommand();
+        public ReactiveCommand<string> CommandButton_Clicked { get; } = new ReactiveCommand<string>();
 
         private readonly int TCPClientTimeout = 5000;
         private readonly int TCPErrorRange = 5;
@@ -210,6 +211,8 @@ namespace TelloWatchdog.ViewModels
                     this.IsSendingCommandToAutopilotServer.Value = true;
                 }
             });
+
+            this.CommandButton_Clicked.Subscribe(cmd => this.AutopilotServerCommand.Value = cmd);
         }
     }
 }

@@ -126,7 +126,25 @@
                             <Button Grid.Row="2" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPButton_Clicked}" IsEnabled="{qc:Binding '!$P', P={Binding IsConnectedWithAutopilotServer.Value}}" />
                             <Label Grid.Row="3" Grid.Column="0" Content="Command:" />
                             <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerCommand.Value}" VerticalContentAlignment="Center" />
-                            <Button Grid.Row="3" Grid.Column="2" Margin="2,2,2,0" Content="Send" Height="26" VerticalAlignment="Top" IsEnabled="{qc:MultiBinding '$P0 &amp;&amp; !$P1' , P0={Binding IsConnectedWithAutopilotServer.Value}, P1={Binding IsSendingCommandToAutopilotServer.Value}}" Command="{Binding SendCommandToAutopilotServerButton_Clicked}" />
+                            <Button Grid.Row="3" Grid.Column="2" Margin="2" Content="Send" Height="26" VerticalAlignment="Top" IsEnabled="{qc:MultiBinding '$P0 &amp;&amp; !$P1' , P0={Binding IsConnectedWithAutopilotServer.Value}, P1={Binding IsSendingCommandToAutopilotServer.Value}}" Command="{Binding SendCommandToAutopilotServerButton_Clicked}" />
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Header="Commands">
+                        <Grid Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                            </Grid.RowDefinitions>
+                            <Button Grid.Row="0" Margin="2" Content="Takeoff" CommandParameter="takeoff" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="1" Margin="2" Content="Land" CommandParameter="land" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="2" Margin="2" Content="Stop (hovering)" CommandParameter="stop" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="3" Margin="2" Content="Start video stream" CommandParameter="streamon" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="4" Margin="2" Content="Stop video stream" CommandParameter="streamoff" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="5" Margin="2" Content="Emergency (stop motor)" CommandParameter="emergency" Command="{Binding CommandButton_Clicked}" />
                         </Grid>
                     </GroupBox>
                 </StackPanel>

@@ -21,7 +21,7 @@
                 <StackPanel Grid.Column="0">
                     <GroupBox Header="Tello state" VerticalAlignment="Top">
                         <StackPanel>
-                            <Border BorderBrush="Gray" BorderThickness="1" Width="320" Height="180">
+                            <Border BorderBrush="Gray" BorderThickness="1" Width="320" Height="240">
                                 <Image Margin="5" Width="320" Height="180" Source="{Binding VideoImage.Value}" />
                             </Border>
                             <GroupBox Header="Mission pad">

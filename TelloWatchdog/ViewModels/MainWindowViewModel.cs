@@ -1,15 +1,23 @@
-﻿using Prism.Mvvm;
-using Reactive.Bindings;
-using System.Collections.ObjectModel;
-using TelloWatchdog.Models;
+﻿using Newtonsoft.Json;
 using OpenCvSharp;
 using OpenCvSharp.WpfExtensions;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using System.Windows;
+using Prism.Mvvm;
+using Reactive.Bindings;
 using System;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using TelloWatchdog.Models;
 using TelloWatchdog.Models.SocketConnection;
-using Newtonsoft.Json;
+using ZXing;
+using ZXing.QrCode;
+using ZXing.Windows.Compatibility;
 
 namespace TelloWatchdog.ViewModels
 {
@@ -24,12 +32,19 @@ namespace TelloWatchdog.ViewModels
         public ReactiveProperty<string> AutopilotServerTCPAddressForState { get; } = new ReactiveProperty<string>("127.0.0.1:8990");
         public ReactiveProperty<string> AutopilotServerTCPAddressForCommand { get; } = new ReactiveProperty<string>("127.0.0.1:8989");
         public ReactiveProperty<string> AutopilotServerCommand { get; } = new ReactiveProperty<string>("");
+        public ReactiveProperty<string> QRCodeText { get; } = new ReactiveProperty<string>("");
+        public ReactiveProperty<ImageSource> QRCodeImage { get; } = new ReactiveProperty<ImageSource>();
+        public ReactiveProperty<int> QRCodeImageHeight { get; } = new ReactiveProperty<int>(150);
+        public ReactiveProperty<int> QRCodeImageWidth { get; } = new ReactiveProperty<int>(150);
         public ObservableCollection<Log> Logs { get; } = new ObservableCollection<Log>();
 
         public ReactiveCommand ConnectToAutopilotServerUDPVideoStreamButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand ConnectToAutopilotServerTCPButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand SendCommandToAutopilotServerButton_Clicked { get; } = new ReactiveCommand();
+        public ReactiveCommand CopyQRCodeImageButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand<string> CommandButton_Clicked { get; } = new ReactiveCommand<string>();
+
+        private BarcodeWriter BarcodeWriter;
 
         private readonly int TCPClientTimeout = 5000;
         private readonly int TCPErrorRange = 5;
@@ -37,6 +52,18 @@ namespace TelloWatchdog.ViewModels
 
         public MainWindowViewModel()
         {
+            this.BarcodeWriter = new BarcodeWriter
+            {
+                Format = BarcodeFormat.QR_CODE,
+                Options = new QrCodeEncodingOptions
+                {
+                    CharacterSet = "UTF-8",
+                    Height = this.QRCodeImageHeight.Value,
+                    Width = this.QRCodeImageWidth.Value,
+                    Margin = 1,
+                }
+            };
+
             this.SubscribeCommands();
         }
 
@@ -213,6 +240,25 @@ namespace TelloWatchdog.ViewModels
             });
 
             this.CommandButton_Clicked.Subscribe(cmd => this.AutopilotServerCommand.Value = cmd);
+
+            this.QRCodeText.Subscribe(text => 
+            {
+                if (string.IsNullOrEmpty(text))
+                {
+                    this.QRCodeImage.Value = null;
+                    return;
+                }
+
+                using var bitmap = this.BarcodeWriter.Write(text);
+                using var ms = new MemoryStream();
+                bitmap.Save(ms, ImageFormat.Bmp);
+                this.QRCodeImage.Value = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+            });
+
+            this.CopyQRCodeImageButton_Clicked.Subscribe(() =>
+            {
+                Clipboard.SetImage((BitmapSource)this.QRCodeImage.Value);
+            });
         }
     }
 }

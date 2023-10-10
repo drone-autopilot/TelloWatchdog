@@ -4,7 +4,7 @@
         xmlns:prism="http://prismlibrary.com/"
         xmlns:qc="http://QuickConverter.CodePlex.com/"
         prism:ViewModelLocator.AutoWireViewModel="True"
-        Title="{Binding Title.Value}" Height="600" Width="800" >
+        Title="{Binding Title.Value}" Height="600" Width="1000" >
     <Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
         <Grid>
@@ -22,7 +22,7 @@
                     <GroupBox Header="Tello state" VerticalAlignment="Top">
                         <StackPanel>
                             <Border BorderBrush="Gray" BorderThickness="1" Width="320" Height="240">
-                                <Image Margin="5" Width="320" Height="180" Source="{Binding VideoImage.Value}" />
+                                <Image Width="320" Height="240" Source="{Binding VideoImage.Value}" />
                             </Border>
                             <GroupBox Header="Mission pad">
                                 <Grid>
@@ -103,49 +103,73 @@
                     </GroupBox>
                 </StackPanel>
                 <StackPanel Grid.Column="1">
-                    <GroupBox Header="Autopilot server">
-                        <Grid Margin="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="100" />
-                            </Grid.ColumnDefinitions>
-                            <Label Grid.Row="0" Grid.Column="0" Content="UDP video stream address:" />
-                            <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerUDPVideoStreamAddress.Value}" VerticalContentAlignment="Center" />
-                            <Button Grid.Row="0" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerUDPVideoStreamButton_Clicked}" />
-                            <Label Grid.Row="1" Grid.Column="0" Content="TCP address for state:" />
-                            <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForState.Value}" VerticalContentAlignment="Center" />
-                            <Label Grid.Row="2" Grid.Column="0" Content="TCP address for command:" />
-                            <TextBox Grid.Row="2" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForCommand.Value}" VerticalContentAlignment="Center" />
-                            <Button Grid.Row="2" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPButton_Clicked}" IsEnabled="{qc:Binding '!$P', P={Binding IsConnectedWithAutopilotServer.Value}}" />
-                            <Label Grid.Row="3" Grid.Column="0" Content="Command:" />
-                            <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerCommand.Value}" VerticalContentAlignment="Center" />
-                            <Button Grid.Row="3" Grid.Column="2" Margin="2" Content="Send" Height="26" VerticalAlignment="Top" IsEnabled="{qc:MultiBinding '$P0 &amp;&amp; !$P1' , P0={Binding IsConnectedWithAutopilotServer.Value}, P1={Binding IsSendingCommandToAutopilotServer.Value}}" Command="{Binding SendCommandToAutopilotServerButton_Clicked}" />
-                        </Grid>
-                    </GroupBox>
-                    <GroupBox Header="Commands">
-                        <Grid Margin="5">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                                <RowDefinition Height="30" />
-                            </Grid.RowDefinitions>
-                            <Button Grid.Row="0" Margin="2" Content="Takeoff" CommandParameter="takeoff" Command="{Binding CommandButton_Clicked}" />
-                            <Button Grid.Row="1" Margin="2" Content="Land" CommandParameter="land" Command="{Binding CommandButton_Clicked}" />
-                            <Button Grid.Row="2" Margin="2" Content="Stop (hovering)" CommandParameter="stop" Command="{Binding CommandButton_Clicked}" />
-                            <Button Grid.Row="3" Margin="2" Content="Start video stream" CommandParameter="streamon" Command="{Binding CommandButton_Clicked}" />
-                            <Button Grid.Row="4" Margin="2" Content="Stop video stream" CommandParameter="streamoff" Command="{Binding CommandButton_Clicked}" />
-                            <Button Grid.Row="5" Margin="2" Content="Emergency (stop motor)" CommandParameter="emergency" Command="{Binding CommandButton_Clicked}" />
-                        </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="200" />
+                        </Grid.ColumnDefinitions>
+                        <GroupBox Header="Autopilot server" Grid.Column="0">
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="30" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="100" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Row="0" Grid.Column="0" Content="UDP video stream address:" />
+                                <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerUDPVideoStreamAddress.Value}" VerticalContentAlignment="Center" />
+                                <Button Grid.Row="0" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerUDPVideoStreamButton_Clicked}" />
+                                <Label Grid.Row="1" Grid.Column="0" Content="TCP address for state:" />
+                                <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForState.Value}" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="2" Grid.Column="0" Content="TCP address for command:" />
+                                <TextBox Grid.Row="2" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForCommand.Value}" VerticalContentAlignment="Center" />
+                                <Button Grid.Row="2" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPButton_Clicked}" IsEnabled="{qc:Binding '!$P', P={Binding IsConnectedWithAutopilotServer.Value}}" />
+                                <Label Grid.Row="3" Grid.Column="0" Content="Command:" />
+                                <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerCommand.Value}" VerticalContentAlignment="Center" />
+                                <Button Grid.Row="3" Grid.Column="2" Margin="2" Content="Send" IsEnabled="{qc:MultiBinding '$P0 &amp;&amp; !$P1' , P0={Binding IsConnectedWithAutopilotServer.Value}, P1={Binding IsSendingCommandToAutopilotServer.Value}}" Command="{Binding SendCommandToAutopilotServerButton_Clicked}" />
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="Commands" Grid.Column="1">
+                            <Grid Margin="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="30" />
+                                </Grid.RowDefinitions>
+                                <Button Grid.Row="0" Margin="2" Content="Takeoff" CommandParameter="takeoff" Command="{Binding CommandButton_Clicked}" />
+                                <Button Grid.Row="1" Margin="2" Content="Land" CommandParameter="land" Command="{Binding CommandButton_Clicked}" />
+                                <Button Grid.Row="2" Margin="2" Content="Stop (hovering)" CommandParameter="stop" Command="{Binding CommandButton_Clicked}" />
+                                <Button Grid.Row="3" Margin="2" Content="Start video stream" CommandParameter="streamon" Command="{Binding CommandButton_Clicked}" />
+                                <Button Grid.Row="4" Margin="2" Content="Stop video stream" CommandParameter="streamoff" Command="{Binding CommandButton_Clicked}" />
+                                <Button Grid.Row="5" Margin="2" Content="Emergency (stop motor)" CommandParameter="emergency" Command="{Binding CommandButton_Clicked}" />
+                            </Grid>
+                        </GroupBox>
+                    </Grid>
+                    <GroupBox Header="QR code generator (For debugging)">
+                        <StackPanel>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="100" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                </Grid.RowDefinitions>
+                                <TextBox Grid.Row="0" Grid.Column="0" Margin="2" VerticalContentAlignment="Center" Text="{Binding QRCodeText.Value, UpdateSourceTrigger=PropertyChanged}" />
+                                <Button Grid.Row="0" Grid.Column="1" Margin="2" Content="Copy image" IsEnabled="{qc:Binding '$P != null', P={Binding QRCodeImage.Value}}" Command="{Binding CopyQRCodeImageButton_Clicked}" />
+                            </Grid>
+                            <Border BorderBrush="Gray" BorderThickness="1" Width="{Binding QRCodeImageWidth.Value}" Height="{Binding QRCodeImageHeight.Value}">
+                                <Image Width="{Binding QRCodeImageWidth.Value}" Height="{Binding QRCodeImageHeight.Value}" Source="{Binding QRCodeImage.Value}" />
+                            </Border>
+                        </StackPanel>
                     </GroupBox>
                 </StackPanel>
             </Grid>

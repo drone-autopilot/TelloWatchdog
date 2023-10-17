@@ -1,8 +1,10 @@
-﻿using System.Text;
-using System.Net;
-using System.Net.Sockets;
+﻿using ImTools;
 using RustyOptions;
 using System;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
 
 namespace TelloWatchdog.Models.SocketConnection
 {
@@ -71,6 +73,14 @@ namespace TelloWatchdog.Models.SocketConnection
             catch (Exception ex)
             {
                 return Result.Err<string, Exception>(ex);
+            }
+
+            var sum = 0;
+            buffer.ForEach(b => sum += (int)b);
+
+            if (sum == 0)
+            {
+                return Result.Err<string, Exception>(new Exception("Buffer is all 0"));
             }
             
             return Result.Ok<string, Exception>(Encoding.UTF8.GetString(buffer));

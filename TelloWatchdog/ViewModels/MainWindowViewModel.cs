@@ -142,13 +142,12 @@ namespace TelloWatchdog.ViewModels
                         this.TCPErrorCount = 0;
                     }
                     catch (JsonException) { }
-
-                    //Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Received: \"{res}\"")));
                 }
                 else if (r.IsErr(out var resError))
                 {
                     // TODO: timeout error
                     Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, resError.Message));
+                    Debug.Print(resError.Message);
                     this.TCPErrorCount++;
                 }
             }
@@ -207,7 +206,6 @@ namespace TelloWatchdog.ViewModels
                 if (r.IsOk(out var res))
                 {
                     Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Received: \"{res}\"")));
-                    this.TCPErrorCount = 0;
                 }
                 else if (r.IsErr(out var resError))
                 {

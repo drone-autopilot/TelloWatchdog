@@ -15,11 +15,14 @@ namespace TelloWatchdog.Models.SocketConnection
         private TcpClient Client;
         public NetworkStream Stream;
 
+        private byte[] Buffer;
+
         public TcpSocketClient(string ipAddress, int port)
         {
             this.IPAddress = IPAddress.Parse(ipAddress);
             this.Port = port;
             this.Client = new TcpClient();
+            this.Buffer = new byte[1024];
         }
 
         public TcpSocketClient(string address)
@@ -64,11 +67,9 @@ namespace TelloWatchdog.Models.SocketConnection
 
         public Result<string, Exception> Receive()
         {
-            var buffer = new byte[1024];
-
             try
             {
-                this.Stream.Read(buffer, 0, buffer.Length);
+                this.Stream.Read(this.Buffer, 0, this.Buffer.Length);
             }
             catch (Exception ex)
             {
@@ -76,14 +77,14 @@ namespace TelloWatchdog.Models.SocketConnection
             }
 
             var sum = 0;
-            buffer.ForEach(b => sum += (int)b);
+            this.Buffer.ForEach(b => sum += (int)b);
 
             if (sum == 0)
             {
                 return Result.Err<string, Exception>(new Exception("Buffer is all 0"));
             }
             
-            return Result.Ok<string, Exception>(Encoding.UTF8.GetString(buffer));
+            return Result.Ok<string, Exception>(Encoding.UTF8.GetString(this.Buffer));
         }
 
         public void Close()

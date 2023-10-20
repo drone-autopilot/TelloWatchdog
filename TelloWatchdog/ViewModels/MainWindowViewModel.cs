@@ -5,9 +5,9 @@ using Prism.Mvvm;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
@@ -47,7 +47,8 @@ namespace TelloWatchdog.ViewModels
 
         private readonly int TCPClientTimeout = 5000;
         private readonly int TCPErrorRange = 5;
-        private int TCPErrorCount = 0;
+        private int TCPClientForStateErrorCount = 0;
+        private int TCPClientForCommandErrorCount = 0;
 
         public MainWindowViewModel()
         {
@@ -74,12 +75,12 @@ namespace TelloWatchdog.ViewModels
         private void CaptureUdpVideoStream()
         {
             var address = this.AutopilotServerUDPVideoStreamAddress.Value;
-            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Connecting to \"{address}\"..."));
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Video stream: Connecting to \"{address}\"..."));
             var capture = VideoCapture.FromFile(address);
             var frame = new Mat();
 
             if (capture.IsOpened())
-                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Connected!"));
+                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Video stream: Connected!"));
 
             while (capture.IsOpened())
             {
@@ -95,7 +96,7 @@ namespace TelloWatchdog.ViewModels
                 Application.Current.Dispatcher.Invoke(() => this.VideoImage.Value = writableBitmap);
             }
 
-            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Disconnected!"));
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Video stream: Disconnected!"));
         }
 
         private void TcpClientForState()
@@ -107,25 +108,25 @@ namespace TelloWatchdog.ViewModels
             }
             catch (Exception e)
             {
-                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, e.Message));
+                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"State client: {e.Message}"));
                 return;
             }
 
-            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Connecting to \"{this.AutopilotServerTCPAddressForState.Value}\"..."));
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"State client: Connecting to \"{this.AutopilotServerTCPAddressForState.Value}\"..."));
             if (sc.Connect(this.TCPClientTimeout).IsErr(out var connectError))
             {
-                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, connectError.Message));
+                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"State client: {connectError.Message}"));
                 sc.Close();
                 return;
             }
 
-            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Connected!"));
+            Application.Current.Dispatcher.Invoke(() => this.IsConnectedWithAutopilotServer.Value = true);
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "State client: Connected!"));
 
-            while (true)
+            while (this.IsConnectedWithAutopilotServer.Value)
             {
-                if (this.TCPErrorCount > this.TCPErrorRange)
+                if (this.TCPClientForStateErrorCount > this.TCPErrorRange)
                 {
-                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Auto disconnected!"));
                     break;
                 }
 
@@ -134,24 +135,36 @@ namespace TelloWatchdog.ViewModels
                 if (r.IsOk(out var res))
                 {
                     // tello state
+                    TelloState state = null;
                     try
                     {
-                        var state = JsonConvert.DeserializeObject<TelloState>(res);
-                        Application.Current.Dispatcher.Invoke(() => this.TelloState.Value = state);
-                        this.TCPErrorCount = 0;
+                        state = JsonConvert.DeserializeObject<TelloState>(res);
                     }
                     catch (JsonException) { }
+
+                    if (state == null)
+                    {
+                        Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"State client: Failed to parse tello state"));
+                        this.TCPClientForStateErrorCount++;
+                        continue;
+                    }
+
+                    Application.Current.Dispatcher.Invoke(() => this.TelloState.Value = state);
                 }
                 else if (r.IsErr(out var resError))
                 {
-                    // TODO: timeout error
-                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, resError.Message));
-                    Debug.Print(resError.Message);
-                    this.TCPErrorCount++;
+                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"State client: {resError.Message}"));
+                    this.TCPClientForStateErrorCount++;
+                    continue;
                 }
+
+                this.TCPClientForStateErrorCount = 0;
             }
 
             sc.Close();
+            this.TCPClientForStateErrorCount = 0;
+            Application.Current.Dispatcher.Invoke(() => this.IsConnectedWithAutopilotServer.Value = false);
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "State client: Disconnected!"));
         }
 
         private void TcpClientForCommand()
@@ -163,40 +176,40 @@ namespace TelloWatchdog.ViewModels
             }
             catch (Exception e)
             {
-                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, e.Message));
+                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"Command client: {e.Message}"));
                 return;
             }
 
-            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Connecting to \"{this.AutopilotServerTCPAddressForCommand.Value}\"..."));
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Command client: Connecting to \"{this.AutopilotServerTCPAddressForCommand.Value}\"..."));
             if (sc.Connect(this.TCPClientTimeout).IsErr(out var connectError))
             {
-                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, connectError.Message));
+                Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"Command client: {connectError.Message}"));
                 sc.Close();
                 return;
             }
 
             Application.Current.Dispatcher.Invoke(() => this.IsConnectedWithAutopilotServer.Value = true);
-            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Connected!"));
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Command client: Connected!"));
 
-            while (true)
+            while (this.IsConnectedWithAutopilotServer.Value)
             {
-                if (this.TCPErrorCount > this.TCPErrorRange)
+                if (this.TCPClientForCommandErrorCount > this.TCPErrorRange)
                 {
-                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Auto disconnected!"));
                     break;
                 }
 
                 if (this.IsSendingCommandToAutopilotServer.Value)
                 {
                     var command = this.AutopilotServerCommand.Value;
-                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Sending command: \"{command}\""));
+                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Command client: Sending command: \"{command}\""));
                     var result = sc.Send(command);
                     Application.Current.Dispatcher.Invoke(() => this.IsSendingCommandToAutopilotServer.Value = false);
 
                     if (result.IsErr(out var sendError))
                     {
-                        Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, sendError.Message));
-                        break;
+                        Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"Command client: {sendError.Message}"));
+                        this.TCPClientForCommandErrorCount++;
+                        continue;
                     }
                 }
 
@@ -204,17 +217,24 @@ namespace TelloWatchdog.ViewModels
                 var r = sc.Receive();
                 if (r.IsOk(out var res))
                 {
-                    Application.Current.Dispatcher.Invoke(() => this.Logs.Add(new Log(Models.LogLevel.Info, $"Received: \"{res}\"")));
+                    if (!res.All(c => c == '\0'))
+                    {
+                        Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Command client: Received: \"{res}\""));
+                    }
                 }
                 else if (r.IsErr(out var resError))
                 {
-                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, resError.Message));
-                    this.TCPErrorCount++;
+                    Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"Command client: {resError.Message}"));
+                    // TODO:再接続後の「確立された接続がホスト コンピューターのソウトウェアによって中止されました」
                 }
+
+                this.TCPClientForCommandErrorCount = 0;
             }
 
             sc.Close();
+            this.TCPClientForCommandErrorCount = 0;
             Application.Current.Dispatcher.Invoke(() => this.IsConnectedWithAutopilotServer.Value = false);
+            Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Command client: Disconnected!"));
         }
 
         private void SubscribeCommands()
@@ -246,10 +266,14 @@ namespace TelloWatchdog.ViewModels
                     return;
                 }
 
-                using var bitmap = this.BarcodeWriter.Write(text);
-                using var ms = new MemoryStream();
-                bitmap.Save(ms, ImageFormat.Bmp);
-                this.QRCodeImage.Value = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                try
+                {
+                    using var bitmap = this.BarcodeWriter.Write(text);
+                    using var ms = new MemoryStream();
+                    bitmap.Save(ms, ImageFormat.Bmp);
+                    this.QRCodeImage.Value = BitmapFrame.Create(ms, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                }
+                catch (Exception) { }
             });
 
             this.CopyQRCodeImageButton_Clicked.Subscribe(() =>

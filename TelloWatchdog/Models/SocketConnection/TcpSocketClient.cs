@@ -67,14 +67,13 @@ namespace TelloWatchdog.Models.SocketConnection
         {
             try
             {
-                this.Stream.Read(this.Buffer, 0, this.Buffer.Length);
+                var size = this.Stream.Read(this.Buffer, 0, this.Buffer.Length);
+                return Result.Ok<string, Exception>(Encoding.UTF8.GetString(this.Buffer, 0, size));
             }
             catch (Exception ex)
             {
                 return Result.Err<string, Exception>(ex);
             }
-            
-            return Result.Ok<string, Exception>(Encoding.UTF8.GetString(this.Buffer));
         }
 
         public void Close()

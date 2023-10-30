@@ -82,11 +82,14 @@ namespace TelloWatchdog.ViewModels
             if (capture.IsOpened())
                 Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Video stream: Connected!"));
 
-            while (capture.IsOpened())
+            while (true)
             {
-                capture.Read(frame);
+                if (!capture.IsOpened())
+                {
+                    break;
+                }
 
-                if (frame.Empty() || frame.ElemSize() == 0)
+                if (!capture.Read(frame) || frame.Empty() || frame.ElemSize() == 0)
                 { 
                     continue;
                 }

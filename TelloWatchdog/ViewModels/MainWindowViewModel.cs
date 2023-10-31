@@ -82,13 +82,8 @@ namespace TelloWatchdog.ViewModels
             if (capture.IsOpened())
                 Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Video stream: Connected!"));
 
-            while (true)
+            while (capture.IsOpened())
             {
-                if (!capture.IsOpened())
-                {
-                    break;
-                }
-
                 if (!capture.Read(frame) || frame.Empty() || frame.ElemSize() == 0)
                 { 
                     continue;
@@ -98,6 +93,8 @@ namespace TelloWatchdog.ViewModels
                 writableBitmap.Freeze();
                 Application.Current.Dispatcher.Invoke(() => this.VideoImage.Value = writableBitmap);
             }
+
+            capture.Dispose();
 
             Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "Video stream: Disconnected!"));
         }
@@ -148,7 +145,7 @@ namespace TelloWatchdog.ViewModels
                     if (state == null)
                     {
                         Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"State client: Failed to parse tello state"));
-                        this.TCPClientForStateErrorCount++;
+                        //this.TCPClientForStateErrorCount++;
                         continue;
                     }
 
@@ -228,7 +225,6 @@ namespace TelloWatchdog.ViewModels
                 else if (r.IsErr(out var resError))
                 {
                     Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"Command client: {resError.Message}"));
-                    // TODO:再接続後の「確立された接続がホスト コンピューターのソウトウェアによって中止されました」
                 }
 
                 this.TCPClientForCommandErrorCount = 0;

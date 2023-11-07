@@ -7,13 +7,8 @@
         Title="{Binding Title.Value}" Height="600" Width="1000" >
     <Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="4" />
-                <RowDefinition Height="100" />
-            </Grid.RowDefinitions>
-            <Grid Grid.Row="0" Margin="5">
+        <ScrollViewer>
+            <Grid Margin="5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="345" />
                     <ColumnDefinition Width="*" />
@@ -153,45 +148,28 @@
                             </Grid>
                         </GroupBox>
                     </Grid>
-                    <GroupBox Header="QR code generator (For debugging)">
-                        <StackPanel>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="100" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="30" />
-                                </Grid.RowDefinitions>
-                                <TextBox Grid.Row="0" Grid.Column="0" Margin="2" VerticalContentAlignment="Center" Text="{Binding QRCodeText.Value, UpdateSourceTrigger=PropertyChanged}" />
-                                <Button Grid.Row="0" Grid.Column="1" Margin="2" Content="Copy image" IsEnabled="{qc:Binding '$P != null', P={Binding QRCodeImage.Value}}" Command="{Binding CopyQRCodeImageButton_Clicked}" />
-                            </Grid>
-                            <Border BorderBrush="Gray" BorderThickness="1" Width="{Binding QRCodeImageWidth.Value}" Height="{Binding QRCodeImageHeight.Value}">
-                                <Image Width="{Binding QRCodeImageWidth.Value}" Height="{Binding QRCodeImageHeight.Value}" Source="{Binding QRCodeImage.Value}" />
-                            </Border>
-                        </StackPanel>
+                    <GroupBox Header="Logs" Height="380px">
+                        <ListView ItemsSource="{Binding Logs}">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListViewItem}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Level}" Value="Error">
+                                            <Setter Property="Foreground" Value="Red" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Header="Level" DisplayMemberBinding="{Binding Level}" Width="40px" />
+                                    <GridViewColumn Header="DateTime" DisplayMemberBinding="{Binding DateTime}" Width="140px" />
+                                    <GridViewColumn Header="Message" DisplayMemberBinding="{Binding Message}" Width="700px" />
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
                     </GroupBox>
                 </StackPanel>
             </Grid>
-            <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" />
-            <ListView Grid.Row="2" ItemsSource="{Binding Logs}">
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListViewItem}">
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding Level}" Value="Error">
-                                <Setter Property="Foreground" Value="Red" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Level" DisplayMemberBinding="{Binding Level}" />
-                        <GridViewColumn Header="DateTime" DisplayMemberBinding="{Binding DateTime}" />
-                        <GridViewColumn Header="Message" DisplayMemberBinding="{Binding Message}" />
-                    </GridView>
-                </ListView.View>
-            </ListView>
-        </Grid>
+        </ScrollViewer>
     </Grid>
 </Window>

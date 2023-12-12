@@ -177,7 +177,7 @@ namespace TelloWatchdog.ViewModels
                 {
                     var command = this.AutopilotServerCommand.Value;
                     Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, $"Command client: Sending command: \"{command}\""));
-                    var result = sc.Send(command);
+                    var result = sc.Send(command + "A");
                     Application.Current.Dispatcher.Invoke(() => this.IsSendingCommandToAutopilotServer.Value = false);
 
                     if (result.IsErr(out var sendError))

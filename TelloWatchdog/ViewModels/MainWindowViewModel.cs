@@ -1,10 +1,14 @@
-﻿using Newtonsoft.Json;
+﻿using LiveCharts;
+using LiveCharts.Defaults;
+using LiveCharts.Wpf;
+using Newtonsoft.Json;
 using OpenCvSharp;
 using OpenCvSharp.WpfExtensions;
 using Prism.Mvvm;
 using Reactive.Bindings;
 using System;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -25,12 +29,21 @@ namespace TelloWatchdog.ViewModels
         public ReactiveProperty<string> AutopilotServerTCPAddressForState { get; } = new ReactiveProperty<string>("127.0.0.1:8990");
         public ReactiveProperty<string> AutopilotServerTCPAddressForCommand { get; } = new ReactiveProperty<string>("127.0.0.1:8989");
         public ReactiveProperty<string> AutopilotServerCommand { get; } = new ReactiveProperty<string>("");
+        public ReactiveProperty<string> TelemetryElapsedTimeLabel { get; } = new ReactiveProperty<string>("<NO CONNECTION>");
+        public ReactiveProperty<SeriesCollection> TelemetryXSeriesCollection { get; } = new ReactiveProperty<SeriesCollection>(new SeriesCollection());
+        public ReactiveProperty<SeriesCollection> TelemetryYSeriesCollection { get; } = new ReactiveProperty<SeriesCollection>(new SeriesCollection());
+        public ReactiveProperty<SeriesCollection> TelemetryZSeriesCollection { get; } = new ReactiveProperty<SeriesCollection>(new SeriesCollection());
+        public ReactiveProperty<SeriesCollection> TelemetryAngleSeriesCollection { get; } = new ReactiveProperty<SeriesCollection>(new SeriesCollection());
+        public ReactiveProperty<SeriesCollection> TelemetryGlobalSeriesCollection { get; } = new ReactiveProperty<SeriesCollection>(new SeriesCollection());
+
         public ObservableCollection<Log> Logs { get; } = new ObservableCollection<Log>();
 
         public ReactiveCommand ConnectToAutopilotServerUDPVideoStreamButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand ConnectToAutopilotServerTCPButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand SendCommandToAutopilotServerButton_Clicked { get; } = new ReactiveCommand();
         public ReactiveCommand<string> CommandButton_Clicked { get; } = new ReactiveCommand<string>();
+
+        private Stopwatch StateConnectionStopWatch = new Stopwatch();
 
         private readonly int TCPClientTimeout = 5000;
         private readonly int TCPErrorRange = 5;
@@ -98,6 +111,9 @@ namespace TelloWatchdog.ViewModels
             Application.Current.Dispatcher.Invoke(() => this.IsConnectedWithAutopilotServer.Value = true);
             Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "State client: Connected!"));
 
+            // start stopwatch
+            Application.Current.Dispatcher.Invoke(() => this.StateConnectionStopWatch.Start());
+
             while (this.IsConnectedWithAutopilotServer.Value)
             {
                 if (this.TCPClientForStateErrorCount > this.TCPErrorRange)
@@ -125,6 +141,7 @@ namespace TelloWatchdog.ViewModels
                     }
 
                     Application.Current.Dispatcher.Invoke(() => this.TelloState.Value = state);
+                    Application.Current.Dispatcher.Invoke(() => this.UpdateTelemetryMonitor());
                 }
                 else if (r.IsErr(out var resError))
                 {
@@ -140,6 +157,17 @@ namespace TelloWatchdog.ViewModels
             this.TCPClientForStateErrorCount = 0;
             Application.Current.Dispatcher.Invoke(() => this.IsConnectedWithAutopilotServer.Value = false);
             Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Info, "State client: Disconnected!"));
+
+            // reset state
+            Application.Current.Dispatcher.Invoke(() => this.TelloState.Value = new TelloState());
+
+            // stop stopwatch
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                this.StateConnectionStopWatch.Stop();
+                this.StateConnectionStopWatch.Reset();
+                this.TelemetryElapsedTimeLabel.Value = "<DISCONNECTED>";
+            });
         }
 
         private void TcpClientForCommand()
@@ -231,6 +259,117 @@ namespace TelloWatchdog.ViewModels
             });
 
             this.CommandButton_Clicked.Subscribe(cmd => this.AutopilotServerCommand.Value = cmd);
+        }
+
+        private void UpdateTelemetryMonitor()
+        {
+            // elapsed
+            var res = this.StateConnectionStopWatch.Elapsed;
+
+            if (res.Milliseconds >= 100)
+            {
+                return;
+            }
+
+            var label = $"{res.Minutes:00}:{res.Seconds:00}:{(res.Milliseconds / 10):00}";
+            this.TelemetryElapsedTimeLabel.Value = label;
+
+            var telloSpeeds = this.TelloState.Value.Speeds;
+            var telloAccs = this.TelloState.Value.Accelerations;
+            var pitch = this.TelloState.Value.Pitch;
+            var roll = this.TelloState.Value.Roll;
+            var yaw = this.TelloState.Value.Yaw;
+            var tof = this.TelloState.Value.TimeOfFlight;
+
+            // x
+            this.TelemetryXSeriesCollection.Value.Clear();
+            this.TelemetryXSeriesCollection.Value.Add(new RowSeries
+            {
+                Values = new ChartValues<long> { telloSpeeds.X, telloAccs.X }
+            });
+
+            // y
+            this.TelemetryYSeriesCollection.Value.Clear();
+            this.TelemetryYSeriesCollection.Value.Add(new RowSeries
+            {
+                Values = new ChartValues<long> { telloSpeeds.Y, telloAccs.Y },
+            });
+
+            // z
+            this.TelemetryZSeriesCollection.Value.Clear();
+            this.TelemetryZSeriesCollection.Value.Add(new RowSeries
+            {
+                Values = new ChartValues<long> { telloSpeeds.Z, telloAccs.Z },
+            });
+
+            // angle
+            this.TelemetryAngleSeriesCollection.Value.Clear();
+            this.TelemetryAngleSeriesCollection.Value.Add(new RowSeries
+            {
+                Values = new ChartValues<long> { pitch, roll, yaw },
+            });
+
+            // global
+            // values[0] -> Speed.X
+            // values[1] -> Speed.Y
+            // values[2] -> Speed.Z
+            // values[3] -> ToF
+            var values = this.TelemetryGlobalSeriesCollection.Value;
+            var count = values.Count;
+
+            var nextV0Value = new ObservablePoint(0, telloSpeeds.X);
+            var nextV1Value = new ObservablePoint(0, telloSpeeds.Y);
+            var nextV2Value = new ObservablePoint(0, telloSpeeds.Z);
+            var nextV3Value = new ObservablePoint(0, tof);
+
+
+            if (count == 0)
+            {
+                // v0
+                values.Add(new LineSeries
+                {
+                    Values = new ChartValues<ObservablePoint>() { nextV0Value },
+                    Title = "Speed.X"
+                });
+
+                // v1
+                values.Add(new LineSeries
+                {
+                    Values = new ChartValues<ObservablePoint>() { nextV1Value },
+                    Title = "Speed.Y"
+                });
+
+                // v2
+                values.Add(new LineSeries
+                {
+                    Values = new ChartValues<ObservablePoint>() { nextV2Value },
+                    Title = "Speed.Z"
+                });
+
+                // v3
+                values.Add(new LineSeries
+                {
+                    Values = new ChartValues<ObservablePoint>() { nextV3Value },
+                    Title = "ToF"
+                });
+            }
+            else
+            {
+                var v0 = values[0];
+                var v1 = values[1];
+                var v2 = values[2];
+                var v3 = values[3];
+
+                nextV0Value.X = v0.Values.Count;
+                nextV1Value.X = v1.Values.Count;
+                nextV2Value.X = v2.Values.Count;
+                nextV3Value.X = v3.Values.Count;
+
+                v0.Values.Add(nextV0Value);
+                v1.Values.Add(nextV1Value);
+                v2.Values.Add(nextV2Value);
+                v3.Values.Add(nextV3Value);
+            }
         }
     }
 }

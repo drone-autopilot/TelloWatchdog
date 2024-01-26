@@ -149,8 +149,112 @@
                             </Grid>
                         </GroupBox>
                     </Grid>
-                    <GroupBox Header="Telemetory monitor" Height="300px">
-                        <lvc:CartesianChart />
+                    <GroupBox Header="Telemetry monitor" Height="500px">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="100px" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Grid.ColumnSpan="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30px" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Content="ELAPSED" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <Label Grid.Row="1" Content="{Binding TelemetryElapsedTimeLabel.Value}" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Grid>
+                                <Grid Grid.Column="2">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30px" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Content="BATTERY" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <lvc:Gauge Grid.Row="1" Value="{Binding TelloState.Value.Battery}" To="100" />
+                                </Grid>
+                                <Grid Grid.Column="3">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30px" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Content="TEMPERATURE" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <lvc:Gauge Grid.Row="1" Value="{Binding TelloState.Value.TempLow}" To="{Binding TelloState.Value.TempHigh}" />
+                                </Grid>
+                                <Grid Grid.Column="4">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30px" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Content="BAROMETER" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <Label Grid.Row="1" Content="{Binding TelloState.Value.Barometer}" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Grid>
+                                <Grid Grid.Column="5">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30px" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Content="TOF" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                    <Label Grid.Row="1" Content="{Binding TelloState.Value.TimeOfFlight}" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                </Grid>
+                            </Grid>
+                            <Grid Grid.Row="1">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0">
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="*" />
+                                            <RowDefinition Height="*" />
+                                        </Grid.RowDefinitions>
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60px" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Content="X" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryXSeriesCollection.Value}" DisableAnimations="True" />
+                                        </Grid>
+                                        <Grid Grid.Row="1">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60px" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Content="Y" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryYSeriesCollection.Value}" DisableAnimations="True" />
+                                        </Grid>
+                                        <Grid Grid.Row="2">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60px" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Content="Z" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryZSeriesCollection.Value}" DisableAnimations="True" />
+                                        </Grid>
+                                        <Grid Grid.Row="3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60px" />
+                                                <ColumnDefinition Width="*" />
+                                            </Grid.ColumnDefinitions>
+                                            <Label Grid.Column="0" Content="Angle" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                            <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryAngleSeriesCollection.Value}" DisableAnimations="True" />
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryGlobalSeriesCollection.Value}" DisableAnimations="True" />
+                            </Grid>
+                        </Grid>
                     </GroupBox>
                     <GroupBox Header="Logs" Height="380px">
                         <ListView ItemsSource="{Binding Logs}">

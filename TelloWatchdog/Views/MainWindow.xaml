@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:prism="http://prismlibrary.com/"
         xmlns:qc="http://QuickConverter.CodePlex.com/"
+        xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
         prism:ViewModelLocator.AutoWireViewModel="True"
         Title="{Binding Title.Value}" Height="600" Width="1000" >
     <Grid>
@@ -148,6 +149,9 @@
                             </Grid>
                         </GroupBox>
                     </Grid>
+                    <GroupBox Header="Telemetory monitor" Height="300px">
+                        <lvc:CartesianChart />
+                    </GroupBox>
                     <GroupBox Header="Logs" Height="380px">
                         <ListView ItemsSource="{Binding Logs}">
                             <ListView.ItemContainerStyle>

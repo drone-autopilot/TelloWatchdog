@@ -47,7 +47,9 @@ namespace TelloWatchdog.ViewModels
 
         private readonly int TCPClientTimeout = 5000;
         private readonly int TCPErrorRange = 5;
+        private readonly int ParseStateErrorRange = 1000;
         private int TCPClientForStateErrorCount = 0;
+        private int FailedToParseStateErrorCount = 0;
         private int TCPClientForCommandErrorCount = 0;
 
         public MainWindowViewModel()
@@ -116,7 +118,7 @@ namespace TelloWatchdog.ViewModels
 
             while (this.IsConnectedWithAutopilotServer.Value)
             {
-                if (this.TCPClientForStateErrorCount > this.TCPErrorRange)
+                if (this.TCPClientForStateErrorCount > this.TCPErrorRange || this.FailedToParseStateErrorCount > this.ParseStateErrorRange)
                 {
                     break;
                 }
@@ -135,11 +137,12 @@ namespace TelloWatchdog.ViewModels
 
                     if (state == null)
                     {
+                        this.FailedToParseStateErrorCount++;
                         Application.Current.Dispatcher.Invoke(() => this.WriteLog(Models.LogLevel.Error, $"State client: Failed to parse tello state"));
-                        //this.TCPClientForStateErrorCount++;
                         continue;
                     }
 
+                    this.FailedToParseStateErrorCount = 0;
                     Application.Current.Dispatcher.Invoke(() => this.TelloState.Value = state);
                     Application.Current.Dispatcher.Invoke(() => this.UpdateTelemetryMonitor());
                 }

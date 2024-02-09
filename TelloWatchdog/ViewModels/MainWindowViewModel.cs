@@ -35,6 +35,10 @@ namespace TelloWatchdog.ViewModels
         public ReactiveProperty<SeriesCollection> TelemetryZSeriesCollection { get; } = new ReactiveProperty<SeriesCollection>(new SeriesCollection());
         public ReactiveProperty<SeriesCollection> TelemetryAngleSeriesCollection { get; } = new ReactiveProperty<SeriesCollection>(new SeriesCollection());
         public ReactiveProperty<SeriesCollection> TelemetryGlobalSeriesCollection { get; } = new ReactiveProperty<SeriesCollection>(new SeriesCollection());
+        public ReactiveProperty<string[]> TelemetryXSeriesLabels { get; } = new ReactiveProperty<string[]>(new string[] {"X.Speed", "X.Accel"});
+        public ReactiveProperty<string[]> TelemetryYSeriesLabels { get; } = new ReactiveProperty<string[]>(new string[] { "Y.Speed", "Y.Accel" });
+        public ReactiveProperty<string[]> TelemetryZSeriesLabels { get; } = new ReactiveProperty<string[]>(new string[] { "Z.Speed", "Z.Accel" });
+        public ReactiveProperty<string[]> TelemetryAngleSeriesLabels { get; } = new ReactiveProperty<string[]>(new string[] { "Pitch", "Roll", "Yaw" });
 
         public ObservableCollection<Log> Logs { get; } = new ObservableCollection<Log>();
 
@@ -51,6 +55,8 @@ namespace TelloWatchdog.ViewModels
         private int TCPClientForStateErrorCount = 0;
         private int FailedToParseStateErrorCount = 0;
         private int TCPClientForCommandErrorCount = 0;
+
+        private int TelemetryGlobalMaxRange = 100;
 
         public MainWindowViewModel()
         {
@@ -288,7 +294,7 @@ namespace TelloWatchdog.ViewModels
             this.TelemetryXSeriesCollection.Value.Clear();
             this.TelemetryXSeriesCollection.Value.Add(new RowSeries
             {
-                Values = new ChartValues<long> { telloSpeeds.X, telloAccs.X }
+                Values = new ChartValues<long> { telloSpeeds.X, telloAccs.X },
             });
 
             // y
@@ -362,6 +368,14 @@ namespace TelloWatchdog.ViewModels
                 var v1 = values[1];
                 var v2 = values[2];
                 var v3 = values[3];
+
+                if (count > this.TelemetryGlobalMaxRange)
+                {
+                    v0.Values.RemoveAt(0);
+                    v1.Values.RemoveAt(0);
+                    v2.Values.RemoveAt(0);
+                    v3.Values.RemoveAt(0);
+                }
 
                 nextV0Value.X = v0.Values.Count;
                 nextV1Value.X = v1.Values.Count;

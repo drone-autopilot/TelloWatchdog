@@ -11,5 +11,10 @@ namespace TelloWatchdog.Views
         {
             InitializeComponent();
         }
+
+        private void CartesianChart_Loaded(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

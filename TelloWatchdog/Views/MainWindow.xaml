@@ -9,291 +9,288 @@
     <Grid>
         <ContentControl prism:RegionManager.RegionName="ContentRegion" />
         <ScrollViewer>
-            <Grid Margin="5">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="345" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0">
-                    <GroupBox Header="Tello state" VerticalAlignment="Top">
-                        <StackPanel>
-                            <Border BorderBrush="Gray" BorderThickness="1" Width="320" Height="240">
-                                <Image Width="320" Height="240" Source="{Binding VideoImage.Value}" />
-                            </Border>
-                            <GroupBox Header="Mission pad">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Grid.Row="0" Grid.Column="0" Content="ID:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="0" Grid.Column="1" Content="-" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="1" Grid.Column="0" Content="(X, Y, Z) Position:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="1" Grid.Column="1" Content="-, -, -" VerticalContentAlignment="Center" />
-                                </Grid>
-                            </GroupBox>
-                            <GroupBox Header="Drone">
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                        <RowDefinition Height="27" />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="150" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <Label Grid.Row="0" Grid.Column="0" Content="(Pitch, Roll, Yaw) angle:" VerticalContentAlignment="Center" />
-                                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
-                                        <Label Content="{Binding TelloState.Value.Pitch}" />
-                                        <Label Content="," />
-                                        <Label Content="{Binding TelloState.Value.Roll}" />
-                                        <Label Content="," />
-                                        <Label Content="{Binding TelloState.Value.Yaw}" />
-                                    </StackPanel>
-                                    <Label Grid.Row="1" Grid.Column="0" Content="(X, Y, Z) speed:" VerticalContentAlignment="Center" />
-                                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
-                                        <Label Content="{Binding TelloState.Value.Speeds.X}" />
-                                        <Label Content="," />
-                                        <Label Content="{Binding TelloState.Value.Speeds.Y}" />
-                                        <Label Content="," />
-                                        <Label Content="{Binding TelloState.Value.Speeds.Z}" />
-                                    </StackPanel>
-                                    <Label Grid.Row="2" Grid.Column="0" Content="(X, Y, Z) acceleration:" VerticalContentAlignment="Center" />
-                                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
-                                        <Label Content="{Binding TelloState.Value.Accelerations.X}" />
-                                        <Label Content="," />
-                                        <Label Content="{Binding TelloState.Value.Accelerations.Y}" />
-                                        <Label Content="," />
-                                        <Label Content="{Binding TelloState.Value.Accelerations.Z}" />
-                                    </StackPanel>
-                                    <Label Grid.Row="3" Grid.Column="0" Content="(Row / High) temperature:" VerticalContentAlignment="Center" />
-                                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
-                                        <Label Content="{Binding TelloState.Value.TempLow}" />
-                                        <Label Content="/" />
-                                        <Label Content="{Binding TelloState.Value.TempHigh}" />
-                                    </StackPanel>
-                                    <Label Grid.Row="4" Grid.Column="0" Content="ToF value:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="4" Grid.Column="1" Content="{Binding TelloState.Value.TimeOfFlight}" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="5" Grid.Column="0" Content="Barometer value:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="5" Grid.Column="1" Content="{Binding TelloState.Value.Barometer}" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="6" Grid.Column="0" Content="Height:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="6" Grid.Column="1" Content="{Binding TelloState.Value.Height}" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="7" Grid.Column="0" Content="Battery:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="7" Grid.Column="1" Content="{Binding TelloState.Value.Battery}" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="8" Grid.Column="0" Content="Elapsed:" VerticalContentAlignment="Center" />
-                                    <Label Grid.Row="8" Grid.Column="1" Content="{Binding TelloState.Value.Time}" VerticalContentAlignment="Center" />
-                                </Grid>
-                            </GroupBox>
-                        </StackPanel>
+            <StackPanel Margin="5">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="200" />
+                    </Grid.ColumnDefinitions>
+                    <GroupBox Header="Autopilot server" Grid.Column="0">
+                        <Grid Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="100" />
+                            </Grid.ColumnDefinitions>
+                            <Label Grid.Row="0" Grid.Column="0" Content="UDP video stream address:" />
+                            <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerUDPVideoStreamAddress.Value}" VerticalContentAlignment="Center" />
+                            <Button Grid.Row="0" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerUDPVideoStreamButton_Clicked}" />
+                            <Label Grid.Row="1" Grid.Column="0" Content="TCP address for state:" />
+                            <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForState.Value}" VerticalContentAlignment="Center" />
+                            <Label Grid.Row="2" Grid.Column="0" Content="TCP address for command:" />
+                            <TextBox Grid.Row="2" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForCommand.Value}" VerticalContentAlignment="Center" />
+                            <Button Grid.Row="2" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPButton_Clicked}" IsEnabled="{qc:Binding '!$P', P={Binding IsConnectedWithAutopilotServer.Value}}" />
+                            <Label Grid.Row="3" Grid.Column="0" Content="Command:" />
+                            <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerCommand.Value}" VerticalContentAlignment="Center" />
+                            <Button Grid.Row="3" Grid.Column="2" Margin="2" Content="Send" IsEnabled="{qc:MultiBinding '$P0 &amp;&amp; !$P1' , P0={Binding IsConnectedWithAutopilotServer.Value}, P1={Binding IsSendingCommandToAutopilotServer.Value}}" Command="{Binding SendCommandToAutopilotServerButton_Clicked}" />
+                        </Grid>
                     </GroupBox>
-                </StackPanel>
-                <StackPanel Grid.Column="1">
+                    <GroupBox Header="Commands" Grid.Column="1">
+                        <Grid Margin="5">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                                <RowDefinition Height="30" />
+                            </Grid.RowDefinitions>
+                            <Button Grid.Row="0" Margin="2" Content="Takeoff" CommandParameter="takeoff" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="1" Margin="2" Content="Land" CommandParameter="land" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="2" Margin="2" Content="Stop (hovering)" CommandParameter="stop" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="3" Margin="2" Content="Start video stream" CommandParameter="streamon" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="4" Margin="2" Content="Stop video stream" CommandParameter="streamoff" Command="{Binding CommandButton_Clicked}" />
+                            <Button Grid.Row="5" Margin="2" Content="Emergency (stop motor)" CommandParameter="emergency" Command="{Binding CommandButton_Clicked}" />
+                        </Grid>
+                    </GroupBox>
+                </Grid>
+                <GroupBox Header="Tello state">
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="320" />
                             <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="200" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <GroupBox Header="Autopilot server" Grid.Column="0">
-                            <Grid Margin="5">
+                        <Border Grid.Column="0" BorderBrush="Gray" BorderThickness="1" Width="320" Height="240">
+                            <Image Width="320" Height="240" Source="{Binding VideoImage.Value}" />
+                        </Border>
+                        <GroupBox Header="Mission pad" Grid.Column="1">
+                            <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="30" />
-                                    <RowDefinition Height="30" />
-                                    <RowDefinition Height="30" />
-                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="27" />
+                                    <RowDefinition Height="27" />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="100" />
+                                    <ColumnDefinition Width="150" />
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Row="0" Grid.Column="0" Content="UDP video stream address:" />
-                                <TextBox Grid.Row="0" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerUDPVideoStreamAddress.Value}" VerticalContentAlignment="Center" />
-                                <Button Grid.Row="0" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerUDPVideoStreamButton_Clicked}" />
-                                <Label Grid.Row="1" Grid.Column="0" Content="TCP address for state:" />
-                                <TextBox Grid.Row="1" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForState.Value}" VerticalContentAlignment="Center" />
-                                <Label Grid.Row="2" Grid.Column="0" Content="TCP address for command:" />
-                                <TextBox Grid.Row="2" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerTCPAddressForCommand.Value}" VerticalContentAlignment="Center" />
-                                <Button Grid.Row="2" Grid.Column="2" Margin="2" Content="Connect" Command="{Binding ConnectToAutopilotServerTCPButton_Clicked}" IsEnabled="{qc:Binding '!$P', P={Binding IsConnectedWithAutopilotServer.Value}}" />
-                                <Label Grid.Row="3" Grid.Column="0" Content="Command:" />
-                                <TextBox Grid.Row="3" Grid.Column="1" Margin="2" Text="{Binding AutopilotServerCommand.Value}" VerticalContentAlignment="Center" />
-                                <Button Grid.Row="3" Grid.Column="2" Margin="2" Content="Send" IsEnabled="{qc:MultiBinding '$P0 &amp;&amp; !$P1' , P0={Binding IsConnectedWithAutopilotServer.Value}, P1={Binding IsSendingCommandToAutopilotServer.Value}}" Command="{Binding SendCommandToAutopilotServerButton_Clicked}" />
+                                <Label Grid.Row="0" Grid.Column="0" Content="ID:" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="0" Grid.Column="1" Content="-" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="1" Grid.Column="0" Content="(X, Y, Z) Position:" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="1" Grid.Column="1" Content="-, -, -" VerticalContentAlignment="Center" />
                             </Grid>
                         </GroupBox>
-                        <GroupBox Header="Commands" Grid.Column="1">
-                            <Grid Margin="5">
+                        <GroupBox Header="Drone" Grid.Column="2">
+                            <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="30" />
-                                    <RowDefinition Height="30" />
-                                    <RowDefinition Height="30" />
-                                    <RowDefinition Height="30" />
-                                    <RowDefinition Height="30" />
-                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="27" />
+                                    <RowDefinition Height="27" />
+                                    <RowDefinition Height="27" />
+                                    <RowDefinition Height="27" />
+                                    <RowDefinition Height="27" />
+                                    <RowDefinition Height="27" />
+                                    <RowDefinition Height="27" />
+                                    <RowDefinition Height="27" />
+                                    <RowDefinition Height="27" />
                                 </Grid.RowDefinitions>
-                                <Button Grid.Row="0" Margin="2" Content="Takeoff" CommandParameter="takeoff" Command="{Binding CommandButton_Clicked}" />
-                                <Button Grid.Row="1" Margin="2" Content="Land" CommandParameter="land" Command="{Binding CommandButton_Clicked}" />
-                                <Button Grid.Row="2" Margin="2" Content="Stop (hovering)" CommandParameter="stop" Command="{Binding CommandButton_Clicked}" />
-                                <Button Grid.Row="3" Margin="2" Content="Start video stream" CommandParameter="streamon" Command="{Binding CommandButton_Clicked}" />
-                                <Button Grid.Row="4" Margin="2" Content="Stop video stream" CommandParameter="streamoff" Command="{Binding CommandButton_Clicked}" />
-                                <Button Grid.Row="5" Margin="2" Content="Emergency (stop motor)" CommandParameter="emergency" Command="{Binding CommandButton_Clicked}" />
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="150" />
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Row="0" Grid.Column="0" Content="(Pitch, Roll, Yaw) angle:" VerticalContentAlignment="Center" />
+                                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal">
+                                    <Label Content="{Binding TelloState.Value.Pitch}" />
+                                    <Label Content="," />
+                                    <Label Content="{Binding TelloState.Value.Roll}" />
+                                    <Label Content="," />
+                                    <Label Content="{Binding TelloState.Value.Yaw}" />
+                                </StackPanel>
+                                <Label Grid.Row="1" Grid.Column="0" Content="(X, Y, Z) speed:" VerticalContentAlignment="Center" />
+                                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal">
+                                    <Label Content="{Binding TelloState.Value.Speeds.X}" />
+                                    <Label Content="," />
+                                    <Label Content="{Binding TelloState.Value.Speeds.Y}" />
+                                    <Label Content="," />
+                                    <Label Content="{Binding TelloState.Value.Speeds.Z}" />
+                                </StackPanel>
+                                <Label Grid.Row="2" Grid.Column="0" Content="(X, Y, Z) acceleration:" VerticalContentAlignment="Center" />
+                                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal">
+                                    <Label Content="{Binding TelloState.Value.Accelerations.X}" />
+                                    <Label Content="," />
+                                    <Label Content="{Binding TelloState.Value.Accelerations.Y}" />
+                                    <Label Content="," />
+                                    <Label Content="{Binding TelloState.Value.Accelerations.Z}" />
+                                </StackPanel>
+                                <Label Grid.Row="3" Grid.Column="0" Content="(Row / High) temperature:" VerticalContentAlignment="Center" />
+                                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal">
+                                    <Label Content="{Binding TelloState.Value.TempLow}" />
+                                    <Label Content="/" />
+                                    <Label Content="{Binding TelloState.Value.TempHigh}" />
+                                </StackPanel>
+                                <Label Grid.Row="4" Grid.Column="0" Content="ToF value:" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="4" Grid.Column="1" Content="{Binding TelloState.Value.TimeOfFlight}" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="5" Grid.Column="0" Content="Barometer value:" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="5" Grid.Column="1" Content="{Binding TelloState.Value.Barometer}" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="6" Grid.Column="0" Content="Height:" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="6" Grid.Column="1" Content="{Binding TelloState.Value.Height}" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="7" Grid.Column="0" Content="Battery:" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="7" Grid.Column="1" Content="{Binding TelloState.Value.Battery}" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="8" Grid.Column="0" Content="Elapsed:" VerticalContentAlignment="Center" />
+                                <Label Grid.Row="8" Grid.Column="1" Content="{Binding TelloState.Value.Time}" VerticalContentAlignment="Center" />
                             </Grid>
                         </GroupBox>
                     </Grid>
-                    <GroupBox Header="Telemetry monitor" Height="500px">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="100px" />
-                                <RowDefinition Height="*" />
-                            </Grid.RowDefinitions>
-                            <Grid Grid.Row="0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="0" Grid.ColumnSpan="2">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="30px" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Label Grid.Row="0" Content="ELAPSED" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                    <Label Grid.Row="1" Content="{Binding TelemetryElapsedTimeLabel.Value}" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                </Grid>
-                                <Grid Grid.Column="2">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="30px" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Label Grid.Row="0" Content="BATTERY" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                    <lvc:Gauge Grid.Row="1" Value="{Binding TelloState.Value.Battery}" To="100" />
-                                </Grid>
-                                <Grid Grid.Column="3">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="30px" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Label Grid.Row="0" Content="TEMPERATURE" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                    <lvc:Gauge Grid.Row="1" Value="{Binding TelloState.Value.TempLow}" To="{Binding TelloState.Value.TempHigh}" />
-                                </Grid>
-                                <Grid Grid.Column="4">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="30px" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Label Grid.Row="0" Content="BAROMETER" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                    <Label Grid.Row="1" Content="{Binding TelloState.Value.Barometer}" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                </Grid>
-                                <Grid Grid.Column="5">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="30px" />
-                                        <RowDefinition Height="*" />
-                                    </Grid.RowDefinitions>
-                                    <Label Grid.Row="0" Content="TOF" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                    <Label Grid.Row="1" Content="{Binding TelloState.Value.TimeOfFlight}" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                </Grid>
+                </GroupBox>
+                <GroupBox Header="Telemetry monitor" Height="500">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="100" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" Grid.ColumnSpan="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Content="ELAPSED" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Label Grid.Row="1" Content="{Binding TelemetryElapsedTimeLabel.Value}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
                             </Grid>
-                            <Grid Grid.Row="1">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Grid Grid.Column="0">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*" />
-                                            <RowDefinition Height="*" />
-                                            <RowDefinition Height="*" />
-                                            <RowDefinition Height="*" />
-                                        </Grid.RowDefinitions>
-                                        <Grid Grid.Row="0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60px" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label Grid.Column="0" Content="X" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryXSeriesCollection.Value}" DisableAnimations="True">
-                                                <lvc:CartesianChart.AxisY>
-                                                    <lvc:Axis Labels="{Binding TelemetryXSeriesLabels.Value}" />
-                                                </lvc:CartesianChart.AxisY>
-                                            </lvc:CartesianChart>
-                                        </Grid>
-                                        <Grid Grid.Row="1">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60px" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label Grid.Column="0" Content="Y" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryYSeriesCollection.Value}" DisableAnimations="True">
-                                                <lvc:CartesianChart.AxisY>
-                                                    <lvc:Axis Labels="{Binding TelemetryYSeriesLabels.Value}" />
-                                                </lvc:CartesianChart.AxisY>
-                                            </lvc:CartesianChart>
-                                        </Grid>
-                                        <Grid Grid.Row="2">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60px" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label Grid.Column="0" Content="Z" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryZSeriesCollection.Value}" DisableAnimations="True">
-                                                <lvc:CartesianChart.AxisY>
-                                                    <lvc:Axis Labels="{Binding TelemetryZSeriesLabels.Value}" />
-                                                </lvc:CartesianChart.AxisY>
-                                            </lvc:CartesianChart>
-                                        </Grid>
-                                        <Grid Grid.Row="3">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60px" />
-                                                <ColumnDefinition Width="*" />
-                                            </Grid.ColumnDefinitions>
-                                            <Label Grid.Column="0" Content="Angle" FontSize="18px" VerticalAlignment="Center" HorizontalAlignment="Center" />
-                                            <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryAngleSeriesCollection.Value}" DisableAnimations="True">
-                                                <lvc:CartesianChart.AxisY>
-                                                    <lvc:Axis Labels="{Binding TelemetryAngleSeriesLabels.Value}" />
-                                                </lvc:CartesianChart.AxisY>
-                                            </lvc:CartesianChart>
-                                        </Grid>
-                                    </Grid>
-                                </Grid>
-                                <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryGlobalSeriesCollection.Value}" DisableAnimations="True" />
+                            <Grid Grid.Column="2">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Content="BATTERY" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <lvc:Gauge Grid.Row="1" Value="{Binding TelloState.Value.Battery}" To="100" />
+                            </Grid>
+                            <Grid Grid.Column="3">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Content="TEMPERATURE" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <lvc:Gauge Grid.Row="1" Value="{Binding TelloState.Value.TempLow}" To="{Binding TelloState.Value.TempHigh}" />
+                            </Grid>
+                            <Grid Grid.Column="4">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Content="BAROMETER" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Label Grid.Row="1" Content="{Binding TelloState.Value.Barometer}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                            </Grid>
+                            <Grid Grid.Column="5">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Content="TOF" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                <Label Grid.Row="1" Content="{Binding TelloState.Value.TimeOfFlight}" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
                             </Grid>
                         </Grid>
-                    </GroupBox>
-                    <GroupBox Header="Logs" Height="380px">
-                        <ListView ItemsSource="{Binding Logs}">
-                            <ListView.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListViewItem}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding Level}" Value="Error">
-                                            <Setter Property="Foreground" Value="Red" />
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </ListView.ItemContainerStyle>
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn Header="Level" DisplayMemberBinding="{Binding Level}" Width="40px" />
-                                    <GridViewColumn Header="DateTime" DisplayMemberBinding="{Binding DateTime}" Width="140px" />
-                                    <GridViewColumn Header="Message" DisplayMemberBinding="{Binding Message}" Width="700px" />
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-                    </GroupBox>
-                </StackPanel>
-            </Grid>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <Grid Grid.Row="0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Content="X" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                        <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryXSeriesCollection.Value}" DisableAnimations="True">
+                                            <lvc:CartesianChart.AxisY>
+                                                <lvc:Axis Labels="{Binding TelemetryXSeriesLabels.Value}" />
+                                            </lvc:CartesianChart.AxisY>
+                                        </lvc:CartesianChart>
+                                    </Grid>
+                                    <Grid Grid.Row="1">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Content="Y" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                        <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryYSeriesCollection.Value}" DisableAnimations="True">
+                                            <lvc:CartesianChart.AxisY>
+                                                <lvc:Axis Labels="{Binding TelemetryYSeriesLabels.Value}" />
+                                            </lvc:CartesianChart.AxisY>
+                                        </lvc:CartesianChart>
+                                    </Grid>
+                                    <Grid Grid.Row="2">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Content="Z" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                        <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryZSeriesCollection.Value}" DisableAnimations="True">
+                                            <lvc:CartesianChart.AxisY>
+                                                <lvc:Axis Labels="{Binding TelemetryZSeriesLabels.Value}" />
+                                            </lvc:CartesianChart.AxisY>
+                                        </lvc:CartesianChart>
+                                    </Grid>
+                                    <Grid Grid.Row="3">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="60" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Label Grid.Column="0" Content="Angle" FontSize="18" VerticalAlignment="Center" HorizontalAlignment="Center" />
+                                        <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryAngleSeriesCollection.Value}" DisableAnimations="True">
+                                            <lvc:CartesianChart.AxisY>
+                                                <lvc:Axis Labels="{Binding TelemetryAngleSeriesLabels.Value}" />
+                                            </lvc:CartesianChart.AxisY>
+                                        </lvc:CartesianChart>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <lvc:CartesianChart Grid.Column="1" Series="{Binding TelemetryGlobalSeriesCollection.Value}" DisableAnimations="True" LegendLocation="Bottom" />
+                        </Grid>
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="Logs" Height="380">
+                    <ListView ItemsSource="{Binding Logs}">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListViewItem}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Level}" Value="Error">
+                                        <Setter Property="Foreground" Value="Red" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Level" DisplayMemberBinding="{Binding Level}" Width="40" />
+                                <GridViewColumn Header="DateTime" DisplayMemberBinding="{Binding DateTime}" Width="140" />
+                                <GridViewColumn Header="Message" DisplayMemberBinding="{Binding Message}" Width="700" />
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </GroupBox>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </Window>

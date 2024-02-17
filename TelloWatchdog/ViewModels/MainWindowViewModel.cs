@@ -175,7 +175,7 @@ namespace TelloWatchdog.ViewModels
             {
                 this.StateConnectionStopWatch.Stop();
                 this.StateConnectionStopWatch.Reset();
-                this.TelemetryElapsedTimeLabel.Value = "<DISCONNECTED>";
+                this.ResetTelemetryMonitor();
             });
         }
 
@@ -324,15 +324,13 @@ namespace TelloWatchdog.ViewModels
             // values[2] -> Speed.Z
             // values[3] -> ToF
             var values = this.TelemetryGlobalSeriesCollection.Value;
-            var count = values.Count;
-
             var nextV0Value = new ObservablePoint(0, telloSpeeds.X);
             var nextV1Value = new ObservablePoint(0, telloSpeeds.Y);
             var nextV2Value = new ObservablePoint(0, telloSpeeds.Z);
             var nextV3Value = new ObservablePoint(0, tof);
 
 
-            if (count == 0)
+            if (values.Count == 0)
             {
                 // v0
                 values.Add(new LineSeries
@@ -369,7 +367,9 @@ namespace TelloWatchdog.ViewModels
                 var v2 = values[2];
                 var v3 = values[3];
 
-                if (count > this.TelemetryGlobalMaxRange)
+                var valuesMaxCount = new int[] { v0.Values.Count, v1.Values.Count, v2.Values.Count, v3.Values.Count }.Max();
+
+                if (valuesMaxCount == this.TelemetryGlobalMaxRange)
                 {
                     v0.Values.RemoveAt(0);
                     v1.Values.RemoveAt(0);
@@ -377,16 +377,30 @@ namespace TelloWatchdog.ViewModels
                     v3.Values.RemoveAt(0);
                 }
 
-                nextV0Value.X = v0.Values.Count;
-                nextV1Value.X = v1.Values.Count;
-                nextV2Value.X = v2.Values.Count;
-                nextV3Value.X = v3.Values.Count;
+                nextV0Value.X = ((ObservablePoint)v0.Values[v0.Values.Count - 1]).X + 1;
+                nextV1Value.X = ((ObservablePoint)v1.Values[v1.Values.Count - 1]).X + 1;
+                nextV2Value.X = ((ObservablePoint)v2.Values[v2.Values.Count - 1]).X + 1;
+                nextV3Value.X = ((ObservablePoint)v3.Values[v3.Values.Count - 1]).X + 1;
 
                 v0.Values.Add(nextV0Value);
                 v1.Values.Add(nextV1Value);
                 v2.Values.Add(nextV2Value);
                 v3.Values.Add(nextV3Value);
             }
+        }
+
+        private void ResetTelemetryMonitor()
+        {
+            this.TelemetryElapsedTimeLabel.Value = "<DISCONNECTED>";
+
+            this.TelemetryXSeriesCollection.Value.Clear();
+            this.TelemetryYSeriesCollection.Value.Clear();
+            this.TelemetryZSeriesCollection.Value.Clear();
+            this.TelemetryAngleSeriesCollection.Value.Clear();
+
+            // global
+            var values = this.TelemetryGlobalSeriesCollection.Value;
+            values.Clear();
         }
     }
 }
